@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pulse Trade — Trading Dashboard</title>
+  <style>
+    :root {
+      --bg: #0b1018;
+      --panel: #111925;
+      --panel-2: #151f2d;
+      --line: #243042;
+      --text: #f4f7fb;
+      --muted: #8b98ad;
+      --green: #33d69f;
+      --red: #ff6d7d;
+      --blue: #6c8cff;
+      --yellow: #f7c85a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: radial-gradient(circle at 75% -15%, #1e2d4c 0, transparent 38%), var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { display: grid; grid-template-columns: 238px 1fr; min-height: 100vh; }
+    aside { padding: 28px 18px; border-right: 1px solid var(--line); background: rgba(10, 15, 23, .76); }
+    .brand { display: flex; align-items: center; gap: 11px; margin: 0 10px 50px; font-weight: 800; letter-spacing: -.03em; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; color: #071119; background: var(--green); font-size: 20px; }
+    .eyebrow { margin: 0 10px 12px; color: #617087; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    nav { display: grid; gap: 5px; }
+    nav a { display: flex; align-items: center; gap: 13px; padding: 12px 13px; border-radius: 9px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 650; }
+    nav a.active, nav a:hover { color: var(--text); background: #182333; }
+    nav a.active { box-shadow: inset 3px 0 var(--green); }
+    .icon { width: 17px; text-align: center; opacity: .9; }
+    .side-note { margin-top: 43vh; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: #101a27; }
+    .side-note p { margin: 0 0 6px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .main { max-width: 1500px; width: 100%; margin: auto; padding: 30px 38px 45px; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 29px; }
+    h1 { margin: 0 0 6px; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.05em; }
+    .subhead { margin: 0; color: var(--muted); font-size: 13px; }
+    .profile { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
+    .avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(140deg, #8ba4ff, #5e6bd8); color: white; font-weight: 800; }
+    .summary { display: grid; grid-template-columns: minmax(240px, 1.6fr) repeat(3, 1fr); gap: 14px; margin-bottom: 17px; }
+    .card { border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, rgba(21,31,45,.98), rgba(14,22,33,.98)); }
+    .balance { position: relative; overflow: hidden; padding: 21px 23px; background: linear-gradient(120deg, #1d3553, #152132); }
+    .balance:after { content: ""; position: absolute; width: 135px; height: 135px; right: -35px; bottom: -70px; border-radius: 50%; background: rgba(108,140,255,.23); }
+    .label { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+    .balance strong { display: block; margin-top: 8px; font-size: 28px; letter-spacing: -.04em; }
+    .balance small { display: block; margin-top: 7px; color: #aec0db; font-size: 11px; }
+    .metric { padding: 19px; }
+    .metric strong { display: block; margin-top: 12px; font-size: 19px; }
+    .positive { color: var(--green); } .negative { color: var(--red); }
+    .content { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 17px; }
+    .chart-card { padding: 20px 21px 16px; }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .card-title { margin: 0; font-size: 15px; }
+    .symbol { color: var(--muted); font-size: 11px; }
+    .symbol b { color: var(--text); margin-right: 9px; font-size: 16px; }
+    .timeframes, .view-toggle { display: flex; gap: 4px; }
+    .timeframes button, .view-toggle button { border: 0; border-radius: 6px; padding: 6px 9px; color: var(--muted); background: transparent; font-size: 11px; }
+    .timeframes button.active, .view-toggle button.active { color: var(--text); background: #293850; }
+    .chart-wrap { position: relative; height: 355px; border: 1px solid #202d40; border-radius: 10px; background: #0d151f; overflow: hidden; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .chart-label { position: absolute; top: 13px; left: 15px; color: #738098; font-size: 10px; pointer-events: none; }
+    .price-tag { position: absolute; right: 9px; top: 31%; padding: 4px 7px; border-radius: 4px; color: #071119; background: var(--green); font-size: 10px; font-weight: 800; }
+    .chart-footer { display: flex; justify-content: space-between; padding-top: 14px; color: var(--muted); font-size: 11px; }
+    .orders { margin-top: 17px; padding: 19px 21px; }
+    .order-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .order-row:first-of-type { border-top: 0; }.order-row strong { color: var(--text); font-size: 12px; }
+    .trade-card { padding: 21px; }
+    .trade-card h2 { margin: 0 0 5px; font-size: 16px; }
+    .trade-card .muted { margin: 0 0 21px; color: var(--muted); font-size: 11px; }
+    .trade-card label { display: block; margin: 16px 0 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .input-box { display: flex; align-items: center; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; background: #0d151f; color: var(--muted); }
+    .input-box input { width: 100%; padding: 11px 5px; border: 0; outline: 0; color: var(--text); background: transparent; font-weight: 700; }
+    .trade-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 22px; }
+    .trade-buttons button { padding: 12px; border: 0; border-radius: 8px; color: #071119; font-weight: 800; transition: transform .15s, filter .15s; }
+    .trade-buttons button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .buy { background: var(--green); }.sell { background: var(--red); }
+    .timer { margin-top: 18px; padding: 14px; border: 1px solid #2a3a51; border-radius: 10px; background: #152236; }
+    .timer-head { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
+    .timer strong { display: block; margin: 8px 0 10px; font-size: 24px; letter-spacing: .04em; }
+    .timer-bar { height: 4px; border-radius: 9px; background: #273750; overflow: hidden; }.timer-bar i { display: block; height: 100%; width: 100%; background: var(--blue); transition: width 1s linear; }
+    .cancel { width: 100%; margin-top: 11px; padding: 7px; border: 1px solid #394961; border-radius: 6px; color: var(--muted); background: transparent; font-size: 10px; }
+    .activity { margin-top: 17px; padding: 19px 21px; }.activity h2 { margin: 0 0 17px; font-size: 15px; }
+    .activity-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); font-size: 11px; }
+    .activity-row span { color: var(--muted); }.activity-row b { display: block; margin-bottom: 3px; color: var(--text); font-size: 12px; }
+    .dot { width: 8px; height: 8px; margin-right: 9px; border-radius: 50%; display: inline-block; }.dot.green { background: var(--green); }.dot.red { background: var(--red); }
+    .toast { position: fixed; right: 24px; bottom: 24px; transform: translateY(18px); opacity: 0; padding: 12px 16px; border: 1px solid #35516a; border-radius: 9px; color: var(--text); background: #17283a; font-size: 12px; transition: .25s; pointer-events: none; }.toast.show { transform: none; opacity: 1; }
+    @media (max-width: 1000px) { .shell { grid-template-columns: 70px 1fr; } aside { padding: 20px 10px; }.brand { margin: 0 8px 40px; }.brand span, nav a span, .eyebrow, .side-note { display: none; } nav a { justify-content: center; }.main { padding: 25px 22px; }.summary { grid-template-columns: 1.4fr 1fr 1fr; }.metric:last-child { display: none; } }
+    @media (max-width: 720px) { .main { padding: 20px 14px; } header { align-items: center; }.profile > span { display: none; }.summary, .content { grid-template-columns: 1fr; }.metric:last-child { display: block; }.chart-wrap { height: 290px; }.orders { overflow-x: auto; }.order-row { min-width: 460px; }.content > aside { display: block; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand"><div class="brand-mark">↗</div><span>Pulse Trade</span></div>
+      <p class="eyebrow">Workspace</p>
+      <nav>
+        <a class="active" href="#"><span class="icon">◈</span><span>Overview</span></a>
+        <a href="#markets"><span class="icon">◒</span><span>Markets</span></a>
+        <a href="#orders"><span class="icon">▤</span><span>Orders</span></a>
+        <a href="#activity"><span class="icon">◷</span><span>Activity</span></a>
+      </nav>
+      <div class="side-note"><p>Market is open</p><small class="positive">● Live data simulation</small></div>
+    </aside>
+    <main class="main">
+      <header>
+        <div><h1>Good morning, trader</h1><p class="subhead">Track your portfolio and make your next move.</p></div>
+        <div class="profile"><span>Demo account</span><div class="avatar">DT</div></div>
+      </header>
+      <section class="summary">
+        <div class="card balance"><div class="label">Virtual Balance</div><strong id="balance">₹1,00,000</strong><small>+ ₹2,840.50 available today</small></div>
+        <div class="card metric"><div class="label">Today's P&amp;L</div><strong class="positive">+₹2,840.50</strong><small class="positive">▲ 2.91%</small></div>
+        <div class="card metric"><div class="label">Open positions</div><strong>04</strong><small>Across 3 markets</small></div>
+        <div class="card metric"><div class="label">Win rate</div><strong>68.4%</strong><small class="positive">▲ 4.2% this week</small></div>
+      </section>
+      <div class="content">
+        <section>
+          <div class="card chart-card" id="markets">
+            <div class="card-top">
+              <div class="symbol"><b>NIFTY 50</b><span class="positive">+1.24%</span></div>
+              <div class="view-toggle"><button class="active" data-view="line">Line</button><button data-view="candle">Candles</button></div>
+            </div>
+            <div class="chart-wrap"><canvas id="chart"></canvas><div class="chart-label">NIFTY 50 · 1D</div><div class="price-tag">22,453.30</div></div>
+            <div class="chart-footer"><span>21,980.00</span><span>22,453.30 <i class="positive">+276.45</i></span><span>22,700.00</span></div>
+          </div>
+          <div class="card orders" id="orders">
+            <div class="card-top"><h2 class="card-title">Recent orders</h2><span class="symbol">View all →</span></div>
+            <div class="order-row"><span>Instrument</span><span>Side</span><span>Price</span><span>Status</span></div>
+            <div class="order-row"><strong>RELIANCE</strong><span class="positive">Buy</span><span>₹2,941.20</span><span class="positive">Completed</span></div>
+            <div class="order-row"><strong>TCS</strong><span class="negative">Sell</span><span>₹3,844.10</span><span class="positive">Completed</span></div>
+          </div>
+        </section>
+        <aside>
+          <div class="card trade-card">
+            <h2>Quick trade</h2><p class="muted">Place a simulated order</p>
+            <div class="symbol"><b> NIFTY 50</b><span class="positive">22,453.30</span></div>
+            <label for="amount">Order amount</label>
+            <div class="input-box"><span>₹</span><input id="amount" type="number" value="10000" min="100" step="100" /></div>
+            <label>Duration</label>
+            <div class="input-box"><input id="duration" type="number" value="30" min="5" max="300" /><span>sec</span></div>
+            <div class="trade-buttons"><button class="buy" id="buy">Buy NIFTY</button><button class="sell" id="sell">Sell NIFTY</button></div>
+            <div class="timer" id="timer" hidden><div class="timer-head"><span id="trade-type">OPEN POSITION</span><span id="timer-status">ACTIVE</span></div><strong id="countdown">00:30</strong><div class="timer-bar"><i id="timer-progress"></i></div><button class="cancel" id="cancel">Close simulated trade</button></div>
+          </div>
+          <div class="card activity" id="activity"><h2>Activity</h2><div class="activity-row"><div><b><i class="dot green"></i>Trade completed</b><span>RELIANCE · Buy</span></div><span>2m ago</span></div><div class="activity-row"><div><b><i class="dot green"></i>Deposit credited</b><span>Virtual account</span></div><span>1h ago</span></div><div class="activity-row"><div><b><i class="dot red"></i>Stop loss set</b><span>TCS · Sell</span></div><span>3h ago</span></div></div>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext("2d");
+    const chartData = [42, 46, 43, 48, 45, 50, 53, 51, 56, 54, 58, 61, 59, 64, 62, 66, 63, 68, 71, 69, 74, 72, 77, 75, 81, 79, 84, 82, 86, 89, 87, 91];
+    let view = "line";
+    function drawChart() {
+      const ratio = window.devicePixelRatio || 1, rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * ratio; canvas.height = rect.height * ratio; ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const w = rect.width, h = rect.height, pad = { t: 27, r: 20, b: 22, l: 18 };
+      ctx.clearRect(0, 0, w, h); ctx.strokeStyle = "#1d2a3a"; ctx.lineWidth = 1;
+      for (let i = 1; i < 5; i++) { const y = pad.t + (h - pad.t - pad.b) * i / 5; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke(); }
+      const min = 35, max = 98, x = i => pad.l + i * (w - pad.l - pad.r) / (chartData.length - 1), y = n => h - pad.b - (n - min) * (h - pad.t - pad.b) / (max - min);
+      if (view === "line") {
+        const fill = ctx.createLinearGradient(0, pad.t, 0, h); fill.addColorStop(0, "rgba(51,214,159,.28)"); fill.addColorStop(1, "rgba(51,214,159,0)");
+        ctx.beginPath(); chartData.forEach((n, i) => i ? ctx.lineTo(x(i), y(n)) : ctx.moveTo(x(i), y(n))); ctx.lineTo(x(chartData.length - 1), h - pad.b); ctx.lineTo(x(0), h - pad.b); ctx.fillStyle = fill; ctx.fill();
+        ctx.beginPath(); chartData.forEach((n, i) => i ? ctx.lineTo(x(i), y(n)) : ctx.moveTo(x(i), y(n))); ctx.strokeStyle = "#33d69f"; ctx.lineWidth = 2.5; ctx.stroke();
+      } else {
+        chartData.forEach((n, i) => { const high = n + 4 + (i % 3), low = n - 3 - (i % 2), open = n - (i % 2 ? 1 : -2), close = n + (i % 3 - 1); ctx.strokeStyle = close >= open ? "#33d69f" : "#ff6d7d"; ctx.fillStyle = ctx.strokeStyle; ctx.beginPath(); ctx.moveTo(x(i), y(low)); ctx.lineTo(x(i), y(high)); ctx.stroke(); const top = y(Math.max(open, close)), bottom = y(Math.min(open, close)); ctx.fillRect(x(i) - 4, top, 8, Math.max(2, bottom - top)); });
+      }
+    }
+    window.addEventListener("resize", drawChart); document.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => { view = button.dataset.view; document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("active", b === button)); drawChart(); })); drawChart();
+    const timerEl = document.getElementById("timer"), countdown = document.getElementById("countdown"), progress = document.getElementById("timer-progress"), tradeType = document.getElementById("trade-type");
+    let timer;
+    function showToast(message) { const toast = document.getElementById("toast"); toast.textContent = message; toast.classList.add("show"); setTimeout(() => toast.classList.remove("show"), 2800); }
+    function renderTrade(trade) { if (!trade) { timerEl.hidden = true; return; } const left = Math.max(0, Math.ceil((trade.endsAt - Date.now()) / 1000)); if (!left) { localStorage.removeItem("pulseTrade"); timerEl.hidden = true; showToast("Simulated trade closed."); return; } timerEl.hidden = false; tradeType.textContent = `${trade.side.toUpperCase()} · NIFTY 50`; countdown.textContent = `00:${String(left).padStart(2, "0")}`; progress.style.width = `${Math.min(100, left / trade.duration * 100)}%`; }
+    function startTrade(side) { const duration = Math.min(300, Math.max(5, Number(document.getElementById("duration").value) || 30)); const amount = Number(document.getElementById("amount").value) || 0; if (amount < 100) return showToast("Enter an amount of at least ₹100."); const trade = { side, amount, duration, endsAt: Date.now() + duration * 1000 }; localStorage.setItem("pulseTrade", JSON.stringify(trade)); renderTrade(trade); showToast(`${side} order placed for ₹${amount.toLocaleString("en-IN")}.`); }
+    document.getElementById("buy").addEventListener("click", () => startTrade("Buy")); document.getElementById("sell").addEventListener("click", () => startTrade("Sell")); document.getElementById("cancel").addEventListener("click", () => { localStorage.removeItem("pulseTrade"); renderTrade(null); showToast("Trade closed manually."); });
+    renderTrade(JSON.parse(localStorage.getItem("pulseTrade") || "null")); timer = setInterval(() => renderTrade(JSON.parse(localStorage.getItem("pulseTrade") || "null")), 1000);
+  </script>
+</body>
+</html>
