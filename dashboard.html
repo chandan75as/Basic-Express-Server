@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TradeAbhyaas Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,sans-serif}
+:root{--bg:#05090f;--p:#0a111b;--p2:#0e1723;--b:#1b2939;--t:#edf3f9;--m:#718096;--g:#00d897;--r:#ff4d5a;--bl:#3b82f6}
+body{background:var(--bg);color:var(--t);height:100vh;overflow:hidden}
+button,input{font:inherit}
+.top{height:62px;background:var(--p);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800}
+.logo b{background:linear-gradient(135deg,#00d897,#087c5d);padding:9px;border-radius:9px;color:#001b13}
+.logo small{display:block;color:var(--m);font-size:8px;letter-spacing:1px}
+.status{font-size:9px;color:var(--g);margin-left:15px}
+.balance{border:1px solid #174b3c;background:#071a15;padding:7px 12px;border-radius:7px;font-size:9px;color:var(--m)}
+.balance b{color:var(--g);font-size:13px}
+.layout{height:calc(100vh - 62px);display:grid;grid-template-columns:280px 1fr 315px}
+.left,.right{background:var(--p)}
+.left{border-right:1px solid var(--b);display:flex;flex-direction:column}
+.right{border-left:1px solid var(--b);padding:17px}
+.title{padding:15px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between}
+.title span{color:var(--m);font-size:8px}
+.cats{display:flex;gap:5px;padding:0 12px 10px;overflow:auto}
+.cat,.tool{border:1px solid var(--b);background:#0c141f;color:var(--m);padding:6px 9px;border-radius:6px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}
+.cat.active,.cat:hover,.tool.active,.tool:hover{background:#15263b;color:white;border-color:#345475}
+.search{margin:0 12px 10px;position:relative}
+.search input{width:100%;height:34px;background:#070d15;border:1px solid var(--b);border-radius:7px;color:white;padding:0 10px;font-size:10px;outline:0}
+.watch{overflow:auto;flex:1}
+.asset{padding:11px 14px;border-top:1px solid #14202e;display:flex;justify-content:space-between;cursor:pointer}
+.asset:hover,.asset.active{background:#101a28}
+.asset.active{box-shadow:inset 2px 0 var(--g)}
+.name{font-size:11px;font-weight:800}.meta{font-size:8px;color:#58687c;margin-top:3px}
+.price{font-size:11px;font-weight:800;text-align:right}.chg{font-size:8px;text-align:right;margin-top:3px;font-weight:800}
+.up{color:var(--g)}.down{color:var(--r)}
+.center{display:flex;flex-direction:column;min-width:0}
+.instrument{height:66px;background:#090f18;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.inst{display:flex;align-items:center;gap:10px}.icon{width:37px;height:37px;background:#121e2d;border:1px solid #263950;border-radius:8px;display:grid;place-items:center;font-size:10px;font-weight:900}
+.inst h1{font-size:15px}.inst p{font-size:8px;color:var(--m);margin-top:3px}
+.quote{margin-left:20px}.quote strong{font-size:16px}.quote small{display:block;font-size:9px;margin-top:3px}
+.tools{display:flex;gap:5px}
+.chart{flex:1;min-height:0;position:relative}
+canvas{width:100%;height:100%;display:block}
+.live{position:absolute;top:12px;left:13px;background:#080d14dd;border:1px solid var(--b);padding:5px 7px;border-radius:5px;font-size:8px;color:var(--g)}
+.positions{height:180px;background:#090f18;border-top:1px solid var(--b);display:flex;flex-direction:column}
+.poshead{height:36px;border-bottom:1px solid var(--b);padding:0 14px;display:flex;align-items:center;justify-content:space-between;font-size:9px;font-weight:800}
+.posbody{overflow:auto;flex:1}
+.empty{height:100%;display:grid;place-items:center;color:#536176;font-size:9px}
+.row{min-width:550px;display:grid;grid-template-columns:1.5fr .7fr .6fr .9fr .8fr 60px;gap:8px;padding:9px 14px;border-bottom:1px solid #14202e}
+.row small{display:block;color:#536176;font-size:7px;margin-bottom:2px}.row b{font-size:9px}
+.close{background:#1c1115;border:1px solid #452a31;color:#ff6570;padding:5px;border-radius:5px;font-size:7px;font-weight:800}
+.orderhead{display:flex;justify-content:space-between}.orderhead h2{font-size:14px}.orderhead p{font-size:8px;color:var(--m);margin-top:4px}
+.market{font-size:7px;color:var(--g);background:#071b15;border:1px solid #164b3d;padding:5px;border-radius:5px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#060b11;border:1px solid var(--b);padding:4px;border-radius:8px;margin:18px 0}
+.side{height:34px;border:0;background:transparent;color:var(--m);border-radius:6px;font-size:10px;font-weight:900;cursor:pointer}.side.buy.active{background:var(--g);color:white}.side.sell.active{background:var(--r);color:white}
+.field{margin-bottom:14px}.label{display:flex;justify-content:space-between;color:#66768b;font-size:8px;font-weight:800;margin-bottom:6px;text-transform:uppercase}
+.field input{width:100%;height:39px;background:#070d15;border:1px solid var(--b);border-radius:7px;color:white;padding:0 11px;outline:0;font-size:11px;font-weight:700}
+.summary{background:#070d15;border:1px solid var(--b);padding:12px;border-radius:8px;margin-top:16px}
+.sum{display:flex;justify-content:space-between;color:#66768b;font-size:8px;margin-bottom:9px}.sum b{color:#d7e0e9}.total{border-top:1px solid var(--b);padding-top:9px;margin-bottom:0}.total b{font-size:11px;color:white}
+.execute{width:100%;height:43px;border:0;border-radius:7px;color:white;font-size:10px;font-weight:900;margin-top:12px;cursor:pointer}.execute.buy{background:linear-gradient(135deg,#00b77f,#00d897)}.execute.sell{background:linear-gradient(135deg,#e53e4b,#ff5965)}
+.info{border-top:1px solid var(--b);margin-top:17px;padding-top:14px}.info div{display:flex;justify-content:space-between;color:#59697d;font-size:8px;margin-bottom:9px}.info b{color:#8998a9}
+.toast{position:fixed;right:18px;bottom:18px;background:#111c2a;border:1px solid #30445c;padding:11px 15px;border-radius:7px;font-size:9px;opacity:0;transform:translateY(50px);transition:.3s;z-index:99}.toast.show{opacity:1;transform:none}
+@media(max-width:1000px){.layout{grid-template-columns:235px 1fr 280px}.status{display:none}}
+@media(max-width:750px){body{overflow:auto}.top{height:58px}.layout{height:auto;display:flex;flex-direction:column}.left{height:250px;border:0;border-bottom:1px solid var(--b)}.center{height:560px}.right{border:0;border-top:1px solid var(--b);min-height:500px}.quote{display:none}.tools{display:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+<div class="logo"><b>TA</b><div>TradeAbhyaas<small>PRO TRADING TERMINAL</small></div><span class="status">● MARKETS OPEN</span></div>
+<div class="balance">AVAILABLE MARGIN <b id="balance">₹1,00,000.00</b></div>
+</header>
+
+<main class="layout">
+
+<section class="left">
+<div class="title">Market Watch <span id="count">0</span></div>
+<div class="cats">
+<button class="cat active" onclick="filter('ALL',this)">ALL</button>
+<button class="cat" onclick="filter('COMMODITY',this)">COMMODITY</button>
+<button class="cat" onclick="filter('STOCK',this)">STOCKS</button>
+<button class="cat" onclick="filter('CRYPTO',this)">CRYPTO</button>
+</div>
+<div class="search"><input id="search" placeholder="Search instruments..." oninput="render()"></div>
+<div class="watch" id="watch"></div>
+</section>
+
+<section class="center">
+
+<div class="instrument">
+<div class="inst">
+<div class="icon" id="icon">NF</div>
+<div><h1 id="symbol">NIFTY 50</h1><p id="details">NSE • STOCK</p></div>
+<div class="quote"><strong id="chartPrice">₹22,453.30</strong><small id="chartChange" class="up">+1.24%</small></div>
+</div>
+<div class="tools">
+<button class="tool active" id="line" onclick="mode('line')">LINE</button>
+<button class="tool" id="candle" onclick="mode('candle')">CANDLE</button>
+</div>
+</div>
+
+<div class="chart"><span class="live">● LIVE • SIMULATED DATA</span><canvas id="canvas"></canvas></div>
+
+<div class="positions">
+<div class="poshead"><span>ACTIVE POSITIONS</span><span id="posCount">0 OPEN</span></div>
+<div class="posbody" id="positions"><div class="empty">No open positions. Place an order to begin.</div></div>
+</div>
+
+</section>
+
+<aside class="right">
+
+<div class="orderhead">
+<div><h2 id="orderTitle">NIFTY 50</h2><p id="orderSub">NSE • Intraday Market</p></div>
+<span class="market">MARKET</span>
+</div>
+
+<div class="tabs">
+<button id="buy" class="side buy active" onclick="side('BUY')">BUY</button>
+<button id="sell" class="side sell" onclick="side('SELL')">SELL</button>
+</div>
+
+<div class="field">
+<div class="label">Quantity <span>Units</span></div>
+<input id="qty" type="number" min="1" value="1" oninput="calc()">
+</div>
+
+<div class="field">
+<div class="label">Current Price <span>Live</span></div>
+<input id="orderPrice" readonly>
+</div>
+
+<div class="summary">
+<div class="sum"><span>Estimated Margin</span><b id="margin">₹0.00</b></div>
+<div class="sum"><span>Brokerage</span><b>₹0.00</b></div>
+<div class="sum"><span>Taxes</span><b>₹0.00</b></div>
+<div class="sum total"><span>Total Required</span><b id="total">₹0.00</b></div>
+</div>
+
+<button id="execute" class="execute buy" onclick="trade()">PLACE BUY ORDER</button>
+
+<div class="info">
+<div><span>Product</span><b>Intraday</b></div>
+<div><span>Order Type</span><b>Market</b></div>
+<div><span>Exchange</span><b id="exchange">NSE</b></div>
+<div><span>Mode</span><b>Virtual</b></div>
+</div>
+
+</aside>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const A=[
+{id:"nifty",name:"NIFTY 50",cat:"STOCK",ex:"NSE",p:22453.3,c:"+1.24%",up:1,i:"NF",d:[42,46,43,48,45,50,53,51,56,54,58,61,64,66,69,72]},
+{id:"bank",name:"BANK NIFTY",cat:"STOCK",ex:"NSE",p:48250.75,c:"+0.91%",up:1,i:"BN",d:[30,34,32,38,35,40,42,45,43,47,49,52]},
+{id:"reliance",name:"RELIANCE",cat:"STOCK",ex:"NSE",p:2941.2,c:"+0.85%",up:1,i:"RE",d:[25,28,27,30,29,33,31,35,34,38,41]},
+{id:"tcs",name:"TCS",cat:"STOCK",ex:"NSE",p:3844.1,c:"-0.45%",up:0,i:"TC",d:[50,48,49,46,47,44,45,42,43,40]},
+{id:"hdfc",name:"HDFC BANK",cat:"STOCK",ex:"NSE",p:1432.1,c:"-1.12%",up:0,i:"HB",d:[60,59,58,57,56,55,54,53,52]},
+{id:"gold",name:"GOLD MINI",cat:"COMMODITY",ex:"MCX",p:71450,c:"+0.45%",up:1,i:"AU",d:[68,70,69,72,71,74,73,76,75,78,77,80]},
+{id:"silver",name:"SILVER FUTURES",cat:"COMMODITY",ex:"MCX",p:84200,c:"+1.12%",up:1,i:"AG",d:[40,42,41,45,44,48,47,50,49,53,52,55]},
+{id:"copper",name:"COPPER",cat:"COMMODITY",ex:"MCX",p:845.5,c:"-0.30%",up:0,i:"CU",d:[90,88,89,86,87,84,85,82,83,80]},
+{id:"crude",name:"CRUDE OIL",cat:"COMMODITY",ex:"MCX",p:6320,c:"+0.85%",up:1,i:"CO",d:[50,52,51,54,53,56,55,58,57,60]},
+{id:"btc",name:"BITCOIN",cat:"CRYPTO",ex:"BINANCE",p:58400,c:"+4.80%",up:1,i:"₿",d:[10,15,20,25,30,40,50,65,70]}
+];
+
+let cur=A[0],cat="ALL",sideType="BUY",chartType="line",bal=100000,pos=[],data=[...cur.d];
+
+const $=id=>document.getElementById(id);
+const money=n=>"₹"+n.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function render(){
+let q=$("search").value.toLowerCase(),w=$("watch");
+w.innerHTML="";
+let f=A.filter(a=>(cat=="ALL"||a.cat==cat)&&(a.name.toLowerCase().includes(q)||a.id.includes(q)));
+$("count").textContent=f.length+" ASSETS";
+f.forEach(a=>{
+let e=document.createElement("div");
+e.className="asset "+(a.id==cur.id?"active":"");
+e.innerHTML=`<div><div class="name">${a.name}</div><div class="meta">${a.ex} • ${a.cat}</div></div><div><div class="price">${money(a.p)}</div><div class="chg ${a.up?"up":"down"}">${a.c}</div></div>`;
+e.onclick=()=>select(a);w.appendChild(e);
+});
+}
+
+function filter(x,b){cat=x;document.querySelectorAll(".cat").forEach(e=>e.classList.remove("active"));b.classList.add("active");render()}
+
+function select(a){
+cur=a;data=[...a.d];
+$("icon").textContent=a.i;$("symbol").textContent=a.name;$("details").textContent=a.ex+" • "+a.cat;
+$("chartPrice").textContent=money(a.p);$("chartChange").textContent=a.c;$("chartChange").className=a.up?"up":"down";
+$("orderTitle").textContent=a.name;$("orderSub").textContent=a.ex+" • Intraday Market";
+$("exchange").textContent=a.ex;$("orderPrice").value=money(a.p);calc();render();draw();
+}
+
+function side(x){
+sideType=x;$("buy").classList.toggle("active",x=="BUY");$("sell").classList.toggle("active",x=="SELL");
+$("execute").className="execute "+(x=="BUY"?"buy":"sell");$("execute").textContent="PLACE "+x+" ORDER";
+}
+
+function calc(){
+let t=(+$("qty").value||1)*cur.p;$("margin").textContent=money(t);$("total").textContent=money(t);
+}
+
+function trade(){
+let q=+$("qty").value||0,t=q*cur.p;
+if(q<1)return toast("Enter valid quantity","error");
+if(sideType=="BUY"&&t>bal)return toast("Insufficient virtual balance","error");
+bal+=sideType=="BUY"?-t:t;$("balance").textContent=money(bal);
+pos.unshift({id:Date.now(),s:cur.name,side:sideType,q,p:cur.p,time:new Date().toLocaleTimeString()});
+positions();toast(sideType+" order executed successfully","success");
+}
+
+function positions(){
+$("posCount").textContent=pos.length+" OPEN";
+if(!pos.length){$("positions").innerHTML='<div class="empty">No open positions. Place an order to begin.</div>';return}
+$("positions").innerHTML=pos.map(x=>`<div class="row"><div><small>INSTRUMENT</small><b>${x.s}</b></div><div><small>SIDE</small><b class="${x.side=="BUY"?"up":"down"}">${x.side}</b></div><div><small>QTY</small><b>${x.q}</b></div><div><small>ENTRY</small><b>${money(x.p)}</b></div><div><small>TIME</small><b>${x.time}</b></div><button class="close" onclick="closePos(${x.id})">CLOSE</button></div>`).join("");
+}
+
+function closePos(id){
+let i=pos.findIndex(x=>x.id==id);if(i<0)return;let x=pos[i],v=x.q*cur.p;
+bal+=x.side=="BUY"?v:-v;bal=Math.max(0,bal);$("balance").textContent=money(bal);pos.splice(i,1);positions();toast("Position closed","success");
+}
+
+const canvas=$("canvas"),ctx=canvas.getContext("2d");
+
+function resize(){
+let r=canvas.getBoundingClientRect(),d=devicePixelRatio||1;
+canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);draw();
+}
+
+function draw(){
+let w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
+ctx.clearRect(0,0,w,h);ctx.fillStyle="#05090f";ctx.fillRect(0,0,w,h);
+ctx.strokeStyle="#101a27";ctx.lineWidth=1;
+for(let i=1;i<8;i++){let y=h*i/8;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+for(let i=1;i<10;i++){let x=w*i/10;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+let mn=Math.min(...data)*.96,mx=Math.max(...data)*1.04,dx=(w-50)/(data.length-1),sc=(h-60)/(mx-mn);
+let pts=data.map((v,i)=>({x:25+i*dx,y:h-30-(v-mn)*sc}));
+if(chartType=="line"){
+let gr=ctx.createLinearGradient(0,0,0,h);gr.addColorStop(0,cur.up?"rgba(0,216,151,.22)":"rgba(255,77,90,.22)");gr.addColorStop(1,"transparent");
+ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fillStyle=gr;ctx.fill();
+ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=cur.up?"#00d897":"#ff4d5a";ctx.lineWidth=2.2;ctx.stroke();
+}else pts.forEach((p,i)=>{let bull=i==0||p.y<=pts[i-1].y,c=bull?"#00d897":"#ff4d5a";ctx.strokeStyle=c;ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(p.x,p.y-15);ctx.lineTo(p.x,p.y+15);ctx.stroke();ctx.fillRect(p.x-4,p.y-7,8,14)});
+}
+
+function mode(x){chartType=x;$("line").classList.toggle("active",x=="line");$("candle").classList.toggle("active",x=="candle");draw()}
+
+function toast(m,c){
+let t=$("toast");t.textContent=m;t.className="toast show "+c;clearTimeout(window.tt);window.tt=setTimeout(()=>t.className="toast",2500);
+}
+
+function tick(){
+A.forEach(a=>{let m=(Math.random()-.5)*a.p*.00015;a.p=Math.max(.01,a.p+m);a.up=m>=0;a.c=(m>=0?"+":"-")+Math.abs(m/a.p*100).toFixed(2)+"%"});
+if(cur){data.push(data.at(-1)+(Math.random()-.5)*2);if(data.length>30)data.shift();$("chartPrice").textContent=money(cur.p);$("orderPrice").value=money(cur.p);calc();draw()}
+render();setTimeout(tick,1200);
+}
+
+window.addEventListener("resize",resize);
+window.addEventListener("load",()=>{render();select(cur);resize();tick()});
+</script>
+</body>
+</html>
