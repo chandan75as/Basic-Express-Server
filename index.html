@@ -1,187 +1,458 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pulse Trade — Trading Dashboard</title>
-  <style>
-    :root {
-      --bg: #0b1018;
-      --panel: #111925;
-      --panel-2: #151f2d;
-      --line: #243042;
-      --text: #f4f7fb;
-      --muted: #8b98ad;
-      --green: #33d69f;
-      --red: #ff6d7d;
-      --blue: #6c8cff;
-      --yellow: #f7c85a;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background: radial-gradient(circle at 75% -15%, #1e2d4c 0, transparent 38%), var(--bg);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-    .shell { display: grid; grid-template-columns: 238px 1fr; min-height: 100vh; }
-    aside { padding: 28px 18px; border-right: 1px solid var(--line); background: rgba(10, 15, 23, .76); }
-    .brand { display: flex; align-items: center; gap: 11px; margin: 0 10px 50px; font-weight: 800; letter-spacing: -.03em; }
-    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; color: #071119; background: var(--green); font-size: 20px; }
-    .eyebrow { margin: 0 10px 12px; color: #617087; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-    nav { display: grid; gap: 5px; }
-    nav a { display: flex; align-items: center; gap: 13px; padding: 12px 13px; border-radius: 9px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 650; }
-    nav a.active, nav a:hover { color: var(--text); background: #182333; }
-    nav a.active { box-shadow: inset 3px 0 var(--green); }
-    .icon { width: 17px; text-align: center; opacity: .9; }
-    .side-note { margin-top: 43vh; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: #101a27; }
-    .side-note p { margin: 0 0 6px; color: var(--muted); font-size: 11px; line-height: 1.45; }
-    .main { max-width: 1500px; width: 100%; margin: auto; padding: 30px 38px 45px; }
-    header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 29px; }
-    h1 { margin: 0 0 6px; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.05em; }
-    .subhead { margin: 0; color: var(--muted); font-size: 13px; }
-    .profile { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
-    .avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(140deg, #8ba4ff, #5e6bd8); color: white; font-weight: 800; }
-    .summary { display: grid; grid-template-columns: minmax(240px, 1.6fr) repeat(3, 1fr); gap: 14px; margin-bottom: 17px; }
-    .card { border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, rgba(21,31,45,.98), rgba(14,22,33,.98)); }
-    .balance { position: relative; overflow: hidden; padding: 21px 23px; background: linear-gradient(120deg, #1d3553, #152132); }
-    .balance:after { content: ""; position: absolute; width: 135px; height: 135px; right: -35px; bottom: -70px; border-radius: 50%; background: rgba(108,140,255,.23); }
-    .label { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .04em; }
-    .balance strong { display: block; margin-top: 8px; font-size: 28px; letter-spacing: -.04em; }
-    .balance small { display: block; margin-top: 7px; color: #aec0db; font-size: 11px; }
-    .metric { padding: 19px; }
-    .metric strong { display: block; margin-top: 12px; font-size: 19px; }
-    .positive { color: var(--green); } .negative { color: var(--red); }
-    .content { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 17px; }
-    .chart-card { padding: 20px 21px 16px; }
-    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-    .card-title { margin: 0; font-size: 15px; }
-    .symbol { color: var(--muted); font-size: 11px; }
-    .symbol b { color: var(--text); margin-right: 9px; font-size: 16px; }
-    .timeframes, .view-toggle { display: flex; gap: 4px; }
-    .timeframes button, .view-toggle button { border: 0; border-radius: 6px; padding: 6px 9px; color: var(--muted); background: transparent; font-size: 11px; }
-    .timeframes button.active, .view-toggle button.active { color: var(--text); background: #293850; }
-    .chart-wrap { position: relative; height: 355px; border: 1px solid #202d40; border-radius: 10px; background: #0d151f; overflow: hidden; }
-    canvas { display: block; width: 100%; height: 100%; }
-    .chart-label { position: absolute; top: 13px; left: 15px; color: #738098; font-size: 10px; pointer-events: none; }
-    .price-tag { position: absolute; right: 9px; top: 31%; padding: 4px 7px; border-radius: 4px; color: #071119; background: var(--green); font-size: 10px; font-weight: 800; }
-    .chart-footer { display: flex; justify-content: space-between; padding-top: 14px; color: var(--muted); font-size: 11px; }
-    .orders { margin-top: 17px; padding: 19px 21px; }
-    .order-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
-    .order-row:first-of-type { border-top: 0; }.order-row strong { color: var(--text); font-size: 12px; }
-    .trade-card { padding: 21px; }
-    .trade-card h2 { margin: 0 0 5px; font-size: 16px; }
-    .trade-card .muted { margin: 0 0 21px; color: var(--muted); font-size: 11px; }
-    .trade-card label { display: block; margin: 16px 0 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
-    .input-box { display: flex; align-items: center; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; background: #0d151f; color: var(--muted); }
-    .input-box input { width: 100%; padding: 11px 5px; border: 0; outline: 0; color: var(--text); background: transparent; font-weight: 700; }
-    .trade-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 22px; }
-    .trade-buttons button { padding: 12px; border: 0; border-radius: 8px; color: #071119; font-weight: 800; transition: transform .15s, filter .15s; }
-    .trade-buttons button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-    .buy { background: var(--green); }.sell { background: var(--red); }
-    .timer { margin-top: 18px; padding: 14px; border: 1px solid #2a3a51; border-radius: 10px; background: #152236; }
-    .timer-head { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
-    .timer strong { display: block; margin: 8px 0 10px; font-size: 24px; letter-spacing: .04em; }
-    .timer-bar { height: 4px; border-radius: 9px; background: #273750; overflow: hidden; }.timer-bar i { display: block; height: 100%; width: 100%; background: var(--blue); transition: width 1s linear; }
-    .cancel { width: 100%; margin-top: 11px; padding: 7px; border: 1px solid #394961; border-radius: 6px; color: var(--muted); background: transparent; font-size: 10px; }
-    .activity { margin-top: 17px; padding: 19px 21px; }.activity h2 { margin: 0 0 17px; font-size: 15px; }
-    .activity-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); font-size: 11px; }
-    .activity-row span { color: var(--muted); }.activity-row b { display: block; margin-bottom: 3px; color: var(--text); font-size: 12px; }
-    .dot { width: 8px; height: 8px; margin-right: 9px; border-radius: 50%; display: inline-block; }.dot.green { background: var(--green); }.dot.red { background: var(--red); }
-    .toast { position: fixed; right: 24px; bottom: 24px; transform: translateY(18px); opacity: 0; padding: 12px 16px; border: 1px solid #35516a; border-radius: 9px; color: var(--text); background: #17283a; font-size: 12px; transition: .25s; pointer-events: none; }.toast.show { transform: none; opacity: 1; }
-    @media (max-width: 1000px) { .shell { grid-template-columns: 70px 1fr; } aside { padding: 20px 10px; }.brand { margin: 0 8px 40px; }.brand span, nav a span, .eyebrow, .side-note { display: none; } nav a { justify-content: center; }.main { padding: 25px 22px; }.summary { grid-template-columns: 1.4fr 1fr 1fr; }.metric:last-child { display: none; } }
-    @media (max-width: 720px) { .main { padding: 20px 14px; } header { align-items: center; }.profile > span { display: none; }.summary, .content { grid-template-columns: 1fr; }.metric:last-child { display: block; }.chart-wrap { height: 290px; }.orders { overflow-x: auto; }.order-row { min-width: 460px; }.content > aside { display: block; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TradeAbhyaas Pro Max - Ultimate</title>
+<style>
+/* Base Reset & Variables */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; }
+:root { 
+    --bg: #05090f; --p: #0a111b; --p2: #0e1723; --b: #1b2939; 
+    --t: #edf3f9; --m: #8b9bb4; --g: #00d897; --r: #ff4d5a; 
+}
+body { background: var(--bg); color: var(--t); font-size: 14px; min-height: 100vh; overflow-x: hidden; }
+button, input { font: inherit; outline: none; }
+
+/* Header & Profile Dropdown */
+.top { position: sticky; top: 0; z-index: 100; height: 70px; background: var(--p); border-bottom: 1px solid var(--b); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+.logo { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 16px; }
+.logo b { background: linear-gradient(135deg, #00d897, #087c5d); padding: 10px; border-radius: 9px; color: #001b13; }
+.logo small { display: block; color: var(--m); font-size: 11px; letter-spacing: 1px; font-weight: normal; }
+
+.header-right { display: flex; align-items: center; gap: 20px; }
+.balance { border: 1px solid #174b3c; background: #071a15; padding: 10px 15px; border-radius: 8px; font-size: 12px; color: var(--m); }
+.balance b { color: var(--g); font-size: 16px; margin-left: 5px; }
+
+.profile-wrap { position: relative; }
+.avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 18px; cursor: pointer; border: 2px solid var(--b); transition: 0.2s; }
+.avatar:hover { border-color: var(--t); }
+.dropdown { position: absolute; top: 55px; right: 0; width: 240px; background: #0c141f; border: 1px solid var(--b); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 10px 0; display: none; flex-direction: column; z-index: 200; }
+.dropdown.show { display: flex; }
+.drop-header { padding: 15px 20px; border-bottom: 1px solid var(--b); margin-bottom: 5px; }
+.drop-header b { display: block; font-size: 15px; }
+.drop-header span { font-size: 11px; color: var(--m); }
+.dropdown a { padding: 12px 20px; text-decoration: none; color: var(--t); font-size: 13px; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; cursor: pointer; }
+.dropdown a:hover { background: #15263b; }
+.dropdown hr { border: none; border-top: 1px solid var(--b); margin: 5px 0; }
+.badge { background: #eab308; color: #422006; font-size: 9px; padding: 3px 6px; border-radius: 4px; font-weight: 900; }
+
+/* Main Layout */
+.layout { display: grid; grid-template-columns: 320px 1fr 360px; align-items: start; min-height: calc(100vh - 70px); transition: grid-template-columns 0.3s ease; }
+.left, .right { background: var(--p); position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; overflow-x: hidden; transition: opacity 0.2s; }
+.left { border-right: 1px solid var(--b); display: flex; flex-direction: column; }
+.right { border-left: 1px solid var(--b); padding: 20px; }
+.center { display: flex; flex-direction: column; min-width: 0; }
+
+/* Market Watch */
+.title { padding: 18px; font-size: 14px; font-weight: 800; text-transform: uppercase; display: flex; justify-content: space-between; }
+.title span { color: var(--m); font-size: 12px; }
+.cats { display: flex; gap: 8px; padding: 0 15px 12px; overflow-x: auto; }
+.cat, .tool { border: 1px solid var(--b); background: #0c141f; color: var(--m); padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.cat.active, .cat:hover, .tool.active, .tool:hover { background: #15263b; color: white; border-color: #345475; }
+.search { margin: 0 15px 15px; position: relative; }
+.search input { width: 100%; height: 40px; background: #070d15; border: 1px solid var(--b); border-radius: 8px; color: white; padding: 0 15px; font-size: 13px; }
+.watch { overflow-y: auto; flex: 1; }
+.asset { padding: 15px; border-top: 1px solid #14202e; display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+.asset:hover, .asset.active { background: #101a28; box-shadow: inset 3px 0 var(--g); }
+.name { font-size: 14px; font-weight: 800; }
+.meta { font-size: 11px; color: #66768b; margin-top: 5px; }
+.price { font-size: 14px; font-weight: 800; text-align: right; }
+.chg { font-size: 12px; text-align: right; margin-top: 5px; font-weight: 700; }
+.up { color: var(--g); } .down { color: var(--r); }
+
+/* Chart Area */
+.instrument { height: 80px; background: #090f18; border-bottom: 1px solid var(--b); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+.inst { display: flex; align-items: center; gap: 15px; }
+.icon { width: 45px; height: 45px; background: #121e2d; border: 1px solid #263950; border-radius: 10px; display: grid; place-items: center; font-size: 14px; font-weight: 900; }
+.inst h1 { font-size: 20px; } .inst p { font-size: 12px; color: var(--m); margin-top: 4px; }
+.quote { margin-left: 30px; } .quote strong { font-size: 20px; } .quote small { display: block; font-size: 13px; margin-top: 4px; font-weight: bold; }
+.tools { display: flex; gap: 8px; align-items: center; }
+.panel-btn { background: #121e2d; border: 1px solid #263950; color: white; border-radius: 6px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
+.panel-btn:hover { background: #1a2a40; }
+
+.chart-wrap { display: flex; height: 450px; border-bottom: 1px solid var(--b); background: #05090f; position: relative; }
+.draw-toolbar { width: 50px; background: #090f18; border-right: 1px solid var(--b); display: flex; flex-direction: column; align-items: center; padding: 15px 0; gap: 12px; }
+.draw-btn { background: transparent; border: none; color: #8b9bb4; font-size: 20px; cursor: pointer; border-radius: 6px; padding: 8px; transition: 0.2s; }
+.draw-btn.active, .draw-btn:hover { color: white; background: #15263b; }
+.chart { flex: 1; position: relative; overflow: hidden; }
+canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+.live { position: absolute; top: 15px; left: 15px; background: #080d14dd; border: 1px solid var(--b); padding: 6px 10px; border-radius: 6px; font-size: 11px; color: var(--g); font-weight: bold; pointer-events: none; }
+
+/* Positions & History */
+.positions-panel { background: #090f18; padding-bottom: 40px; }
+.section-title { padding: 15px 20px; background: #0c141f; border-bottom: 1px solid var(--b); display: flex; justify-content: space-between; align-items: center; }
+.section-title h3 { font-size: 16px; font-weight: 700; color: white; }
+.live-pnl-box { font-size: 14px; font-weight: 700; background: #15263b; padding: 8px 15px; border-radius: 6px; }
+.live-pnl-box b { font-size: 16px; margin-left: 8px; }
+.empty { padding: 40px 20px; text-align: center; color: #66768b; font-size: 14px; }
+.row { display: grid; grid-template-columns: 1fr 0.8fr 0.8fr 1fr 1fr 1fr 1fr 80px; gap: 10px; padding: 15px 20px; border-bottom: 1px solid #14202e; align-items: center; }
+.row.history-row { grid-template-columns: 1fr 0.8fr 0.8fr 1fr 1fr 1fr 1fr; background: #0a1018; }
+.row small { display: block; color: #66768b; font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 0.5px; }
+.row b { font-size: 13px; }
+.time-stamp { color: #8b9bb4; font-size: 11px !important; font-weight: normal; }
+.close-btn { background: #1c1115; border: 1px solid #452a31; color: #ff6570; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+.close-btn:hover { background: #ff4d5a; color: white; }
+
+/* Order Panel */
+.orderhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.orderhead h2 { font-size: 18px; } .orderhead p { font-size: 12px; color: var(--m); margin-top: 5px; }
+.market { font-size: 11px; font-weight: bold; color: var(--g); background: #071b15; border: 1px solid #164b3d; padding: 6px 10px; border-radius: 6px; }
+.order-tabs { display: grid; grid-template-columns: 1fr 1fr; background: #060b11; border: 1px solid var(--b); padding: 5px; border-radius: 8px; margin-bottom: 20px; }
+.side { height: 45px; border: 0; background: transparent; color: var(--m); border-radius: 6px; font-size: 14px; font-weight: 900; cursor: pointer; }
+.side.buy.active { background: var(--g); color: #001b13; } .side.sell.active { background: var(--r); color: white; }
+.field { margin-bottom: 20px; }
+.label { display: flex; justify-content: space-between; color: #8b9bb4; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+.field input { width: 100%; height: 45px; background: #070d15; border: 1px solid var(--b); border-radius: 8px; color: white; padding: 0 15px; font-size: 16px; font-weight: 700; }
+.summary { background: #070d15; border: 1px solid var(--b); padding: 15px; border-radius: 8px; margin-top: 20px; }
+.sum { display: flex; justify-content: space-between; color: #8b9bb4; font-size: 12px; margin-bottom: 12px; }
+.sum b { color: #edf3f9; font-size: 13px; }
+.total { border-top: 1px solid var(--b); padding-top: 12px; margin-bottom: 0; }
+.total b { font-size: 16px; color: white; }
+.execute { width: 100%; height: 55px; border: 0; border-radius: 8px; color: white; font-size: 15px; font-weight: 900; margin-top: 20px; cursor: pointer; }
+.execute.buy { background: linear-gradient(135deg, #00b77f, #00d897); color: #001b13; }
+.execute.sell { background: linear-gradient(135deg, #e53e4b, #ff5965); }
+
+/* Toast */
+.toast { position: fixed; right: 20px; bottom: 20px; background: #111c2a; border: 1px solid #30445c; padding: 15px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; opacity: 0; transform: translateY(50px); transition: 0.3s; z-index: 999; }
+.toast.show { opacity: 1; transform: none; }
+.toast.success { border-color: var(--g); color: var(--g); }
+.toast.error { border-color: var(--r); color: var(--r); }
+.toast.info { border-color: #3b82f6; color: #3b82f6; }
+
+@media(max-width: 1100px) { 
+    .layout { display: flex; flex-direction: column; }
+    .left, .right { position: relative; top: 0; height: auto; border: none; display: block !important; opacity: 1 !important; }
+    .left { border-bottom: 1px solid var(--b); max-height: 400px; }
+    .right { border-top: 1px solid var(--b); }
+    .chart-wrap { height: 350px; }
+    .hide-mobile, .quote { display: none; }
+    .row { grid-template-columns: 1fr 1fr; gap: 15px; } /* Mobile table stack */
+}
+</style>
 </head>
 <body>
-  <div class="shell">
-    <aside>
-      <div class="brand"><div class="brand-mark">↗</div><span>Pulse Trade</span></div>
-      <p class="eyebrow">Workspace</p>
-      <nav>
-        <a class="active" href="#"><span class="icon">◈</span><span>Overview</span></a>
-        <a href="#markets"><span class="icon">◒</span><span>Markets</span></a>
-        <a href="#orders"><span class="icon">▤</span><span>Orders</span></a>
-        <a href="#activity"><span class="icon">◷</span><span>Activity</span></a>
-      </nav>
-      <div class="side-note"><p>Market is open</p><small class="positive">● Live data simulation</small></div>
-    </aside>
-    <main class="main">
-      <header>
-        <div><h1>Good morning, trader</h1><p class="subhead">Track your portfolio and make your next move.</p></div>
-        <div class="profile"><span>Demo account</span><div class="avatar">DT</div></div>
-      </header>
-      <section class="summary">
-        <div class="card balance"><div class="label">Virtual Balance</div><strong id="balance">₹1,00,000</strong><small>+ ₹2,840.50 available today</small></div>
-        <div class="card metric"><div class="label">Today's P&amp;L</div><strong class="positive">+₹2,840.50</strong><small class="positive">▲ 2.91%</small></div>
-        <div class="card metric"><div class="label">Open positions</div><strong>04</strong><small>Across 3 markets</small></div>
-        <div class="card metric"><div class="label">Win rate</div><strong>68.4%</strong><small class="positive">▲ 4.2% this week</small></div>
-      </section>
-      <div class="content">
-        <section>
-          <div class="card chart-card" id="markets">
-            <div class="card-top">
-              <div class="symbol"><b>NIFTY 50</b><span class="positive">+1.24%</span></div>
-              <div class="view-toggle"><button class="active" data-view="line">Line</button><button data-view="candle">Candles</button></div>
+
+<header class="top">
+    <div class="logo"><b>TA</b><div>TradeAbhyaas <small>PRO TRADING TERMINAL</small></div></div>
+    
+    <div class="header-right">
+        <div class="balance">MARGIN <b id="balance">₹1,00,000.00</b></div>
+        
+        <div class="profile-wrap">
+            <div class="avatar" onclick="toggleProfile()">U</div>
+            <div class="dropdown" id="profileDropdown">
+                <div class="drop-header">
+                    <b>Trader User</b>
+                    <span>user@tradeabhyaas.pro</span>
+                </div>
+                <a onclick="actionMenu('Profile Edit')">👤 Edit Profile</a>
+                <a onclick="actionMenu('KYC verification')">🛡️ Complete KYC <span class="badge">PENDING</span></a>
+                <a onclick="actionMenu('Funds Panel')">💳 Deposit / Withdraw</a>
+                <a onclick="actionMenu('Settings')">⚙️ Terminal Settings</a>
+                <hr>
+                <a onclick="actionMenu('Logout')" style="color: #ff4d5a;">🚪 Logout securely</a>
             </div>
-            <div class="chart-wrap"><canvas id="chart"></canvas><div class="chart-label">NIFTY 50 · 1D</div><div class="price-tag">22,453.30</div></div>
-            <div class="chart-footer"><span>21,980.00</span><span>22,453.30 <i class="positive">+276.45</i></span><span>22,700.00</span></div>
-          </div>
-          <div class="card orders" id="orders">
-            <div class="card-top"><h2 class="card-title">Recent orders</h2><span class="symbol">View all →</span></div>
-            <div class="order-row"><span>Instrument</span><span>Side</span><span>Price</span><span>Status</span></div>
-            <div class="order-row"><strong>RELIANCE</strong><span class="positive">Buy</span><span>₹2,941.20</span><span class="positive">Completed</span></div>
-            <div class="order-row"><strong>TCS</strong><span class="negative">Sell</span><span>₹3,844.10</span><span class="positive">Completed</span></div>
-          </div>
-        </section>
-        <aside>
-          <div class="card trade-card">
-            <h2>Quick trade</h2><p class="muted">Place a simulated order</p>
-            <div class="symbol"><b> NIFTY 50</b><span class="positive">22,453.30</span></div>
-            <label for="amount">Order amount</label>
-            <div class="input-box"><span>₹</span><input id="amount" type="number" value="10000" min="100" step="100" /></div>
-            <label>Duration</label>
-            <div class="input-box"><input id="duration" type="number" value="30" min="5" max="300" /><span>sec</span></div>
-            <div class="trade-buttons"><button class="buy" id="buy">Buy NIFTY</button><button class="sell" id="sell">Sell NIFTY</button></div>
-            <div class="timer" id="timer" hidden><div class="timer-head"><span id="trade-type">OPEN POSITION</span><span id="timer-status">ACTIVE</span></div><strong id="countdown">00:30</strong><div class="timer-bar"><i id="timer-progress"></i></div><button class="cancel" id="cancel">Close simulated trade</button></div>
-          </div>
-          <div class="card activity" id="activity"><h2>Activity</h2><div class="activity-row"><div><b><i class="dot green"></i>Trade completed</b><span>RELIANCE · Buy</span></div><span>2m ago</span></div><div class="activity-row"><div><b><i class="dot green"></i>Deposit credited</b><span>Virtual account</span></div><span>1h ago</span></div><div class="activity-row"><div><b><i class="dot red"></i>Stop loss set</b><span>TCS · Sell</span></div><span>3h ago</span></div></div>
-        </aside>
-      </div>
-    </main>
-  </div>
-  <div class="toast" id="toast"></div>
-  <script>
-    const canvas = document.getElementById("chart");
-    const ctx = canvas.getContext("2d");
-    const chartData = [42, 46, 43, 48, 45, 50, 53, 51, 56, 54, 58, 61, 59, 64, 62, 66, 63, 68, 71, 69, 74, 72, 77, 75, 81, 79, 84, 82, 86, 89, 87, 91];
-    let view = "line";
-    function drawChart() {
-      const ratio = window.devicePixelRatio || 1, rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * ratio; canvas.height = rect.height * ratio; ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const w = rect.width, h = rect.height, pad = { t: 27, r: 20, b: 22, l: 18 };
-      ctx.clearRect(0, 0, w, h); ctx.strokeStyle = "#1d2a3a"; ctx.lineWidth = 1;
-      for (let i = 1; i < 5; i++) { const y = pad.t + (h - pad.t - pad.b) * i / 5; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke(); }
-      const min = 35, max = 98, x = i => pad.l + i * (w - pad.l - pad.r) / (chartData.length - 1), y = n => h - pad.b - (n - min) * (h - pad.t - pad.b) / (max - min);
-      if (view === "line") {
-        const fill = ctx.createLinearGradient(0, pad.t, 0, h); fill.addColorStop(0, "rgba(51,214,159,.28)"); fill.addColorStop(1, "rgba(51,214,159,0)");
-        ctx.beginPath(); chartData.forEach((n, i) => i ? ctx.lineTo(x(i), y(n)) : ctx.moveTo(x(i), y(n))); ctx.lineTo(x(chartData.length - 1), h - pad.b); ctx.lineTo(x(0), h - pad.b); ctx.fillStyle = fill; ctx.fill();
-        ctx.beginPath(); chartData.forEach((n, i) => i ? ctx.lineTo(x(i), y(n)) : ctx.moveTo(x(i), y(n))); ctx.strokeStyle = "#33d69f"; ctx.lineWidth = 2.5; ctx.stroke();
-      } else {
-        chartData.forEach((n, i) => { const high = n + 4 + (i % 3), low = n - 3 - (i % 2), open = n - (i % 2 ? 1 : -2), close = n + (i % 3 - 1); ctx.strokeStyle = close >= open ? "#33d69f" : "#ff6d7d"; ctx.fillStyle = ctx.strokeStyle; ctx.beginPath(); ctx.moveTo(x(i), y(low)); ctx.lineTo(x(i), y(high)); ctx.stroke(); const top = y(Math.max(open, close)), bottom = y(Math.min(open, close)); ctx.fillRect(x(i) - 4, top, 8, Math.max(2, bottom - top)); });
-      }
+        </div>
+    </div>
+</header>
+
+<main class="layout" id="main-layout">
+    <section class="left" id="panel-left">
+        <div class="title">Market Watch <span id="count">0</span></div>
+        <div class="cats">
+            <button class="cat active" onclick="filterAssets('ALL', this)">ALL</button>
+            <button class="cat" onclick="filterAssets('STOCK', this)">STOCKS</button>
+            <button class="cat" onclick="filterAssets('CRYPTO', this)">CRYPTO</button>
+        </div>
+        <div class="search"><input id="search" placeholder="Search instruments..." oninput="renderWatchlist()"></div>
+        <div class="watch" id="watch"></div>
+    </section>
+
+    <section class="center">
+        <div class="instrument">
+            <div class="inst">
+                <button class="panel-btn hide-mobile" onclick="toggleSidebar('left')">❮</button>
+                <div class="icon" id="icon">NF</div>
+                <div><h1 id="symbol">NIFTY 50</h1><p id="details">NSE • STOCK</p></div>
+                <div class="quote"><strong id="chartPrice">₹22,453.30</strong><small id="chartChange" class="up">+1.24%</small></div>
+            </div>
+            <div class="tools">
+                <button class="tool active" id="btn-line" onclick="setChartMode('line')">LINE</button>
+                <button class="tool" id="btn-candle" onclick="setChartMode('candle')">CANDLE</button>
+                <button class="panel-btn hide-mobile" onclick="toggleSidebar('right')">❯</button>
+            </div>
+        </div>
+
+        <div class="chart-wrap">
+            <div class="draw-toolbar">
+                <button class="draw-btn active" id="tool-crosshair" onclick="setDrawTool('crosshair')">⌖</button>
+                <button class="draw-btn" id="tool-trendline" onclick="setDrawTool('trendline')">╱</button>
+                <button class="draw-btn" id="tool-hline" onclick="setDrawTool('hline')">━</button>
+                <button class="draw-btn" onclick="clearDrawings()" style="color: #ff4d5a; margin-top: auto;">🗑️</button>
+            </div>
+            <div class="chart"><span class="live">● LIVE MARKET</span><canvas id="canvas"></canvas></div>
+        </div>
+
+        <div class="positions-panel">
+            <div class="section-title">
+                <h3>Open Positions (Live)</h3>
+                <div class="live-pnl-box">Total Live P&L: <b id="total-live-pnl" class="up">₹0.00</b></div>
+            </div>
+            <div class="posbody" id="open-positions-list"><div class="empty">No open positions.</div></div>
+            
+            <div class="section-title" style="margin-top: 20px; border-top: 1px solid #1b2939;">
+                <h3>Buy / Sell Trade History</h3>
+            </div>
+            <div class="posbody" id="trade-history-list"><div class="empty">No trade history yet.</div></div>
+        </div>
+    </section>
+
+    <aside class="right" id="panel-right">
+        <div class="orderhead">
+            <div><h2 id="orderTitle">NIFTY 50</h2><p id="orderSub">NSE • Intraday</p></div>
+            <span class="market">MARKET</span>
+        </div>
+        <div class="order-tabs">
+            <button id="btn-buy" class="side buy active" onclick="setOrderSide('BUY')">BUY</button>
+            <button id="btn-sell" class="side sell" onclick="setOrderSide('SELL')">SELL</button>
+        </div>
+        <div class="field">
+            <div class="label">Quantity <span>Units</span></div>
+            <input id="qty" type="number" min="1" value="1" oninput="calculateMargin()">
+        </div>
+        <div class="field">
+            <div class="label">Current Market Price</div>
+            <input id="orderPrice" readonly>
+        </div>
+        <div class="summary">
+            <div class="sum"><span>Core Margin</span><b id="margin">₹0.00</b></div>
+            <div class="sum"><span>Platform Fee (5%)</span><b id="fee-platform" style="color:var(--r)">₹0.00</b></div>
+            <div class="sum"><span>Govt. Taxes (0.18%)</span><b id="fee-taxes" style="color:var(--r)">₹0.00</b></div>
+            <div class="sum total"><span>Total Payable</span><b id="total">₹0.00</b></div>
+        </div>
+        <button id="execute" class="execute buy" onclick="executeTrade()">PLACE BUY ORDER</button>
+    </aside>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// --- PROFILE & SIDEBAR LOGIC ---
+function toggleProfile() {
+    document.getElementById("profileDropdown").classList.toggle("show");
+}
+window.onclick = function(e) {
+    if (!e.target.matches('.avatar')) {
+        let dropdowns = document.getElementsByClassName("dropdown");
+        for (let i = 0; i < dropdowns.length; i++) {
+            if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
+        }
     }
-    window.addEventListener("resize", drawChart); document.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => { view = button.dataset.view; document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("active", b === button)); drawChart(); })); drawChart();
-    const timerEl = document.getElementById("timer"), countdown = document.getElementById("countdown"), progress = document.getElementById("timer-progress"), tradeType = document.getElementById("trade-type");
-    let timer;
-    function showToast(message) { const toast = document.getElementById("toast"); toast.textContent = message; toast.classList.add("show"); setTimeout(() => toast.classList.remove("show"), 2800); }
-    function renderTrade(trade) { if (!trade) { timerEl.hidden = true; return; } const left = Math.max(0, Math.ceil((trade.endsAt - Date.now()) / 1000)); if (!left) { localStorage.removeItem("pulseTrade"); timerEl.hidden = true; showToast("Simulated trade closed."); return; } timerEl.hidden = false; tradeType.textContent = `${trade.side.toUpperCase()} · NIFTY 50`; countdown.textContent = `00:${String(left).padStart(2, "0")}`; progress.style.width = `${Math.min(100, left / trade.duration * 100)}%`; }
-    function startTrade(side) { const duration = Math.min(300, Math.max(5, Number(document.getElementById("duration").value) || 30)); const amount = Number(document.getElementById("amount").value) || 0; if (amount < 100) return showToast("Enter an amount of at least ₹100."); const trade = { side, amount, duration, endsAt: Date.now() + duration * 1000 }; localStorage.setItem("pulseTrade", JSON.stringify(trade)); renderTrade(trade); showToast(`${side} order placed for ₹${amount.toLocaleString("en-IN")}.`); }
-    document.getElementById("buy").addEventListener("click", () => startTrade("Buy")); document.getElementById("sell").addEventListener("click", () => startTrade("Sell")); document.getElementById("cancel").addEventListener("click", () => { localStorage.removeItem("pulseTrade"); renderTrade(null); showToast("Trade closed manually."); });
-    renderTrade(JSON.parse(localStorage.getItem("pulseTrade") || "null")); timer = setInterval(() => renderTrade(JSON.parse(localStorage.getItem("pulseTrade") || "null")), 1000);
-  </script>
+}
+function actionMenu(name) { showToast(`Redirecting to ${name}...`, 'info'); }
+
+let leftVisible = true, rightVisible = true;
+function toggleSidebar(side) {
+    let layout = $("main-layout");
+    if(side === 'left') { leftVisible = !leftVisible; $("panel-left").style.opacity = leftVisible ? "1" : "0"; } 
+    else { rightVisible = !rightVisible; $("panel-right").style.opacity = rightVisible ? "1" : "0"; }
+    layout.style.gridTemplateColumns = `${leftVisible ? "320px" : "0px"} 1fr ${rightVisible ? "360px" : "0px"}`;
+    setTimeout(resizeCanvas, 300);
+}
+
+// --- MARKET DATA & FORMATTING ---
+const MarketData = [
+    {id:"nifty", name:"NIFTY 50", cat:"STOCK", ex:"NSE", p:22453.3, c:"+1.24%", up:true, i:"NF", d:[42,46,43,48,45,50,53,51,56,54,58,61,64,66,69,72]},
+    {id:"bank", name:"BANK NIFTY", cat:"STOCK", ex:"NSE", p:48250.75, c:"+0.91%", up:true, i:"BN", d:[30,34,32,38,35,40,42,45,43,47,49,52]},
+    {id:"reliance", name:"RELIANCE", cat:"STOCK", ex:"NSE", p:2941.2, c:"+0.85%", up:true, i:"RE", d:[25,28,27,30,29,33,31,35,34,38,41]},
+    {id:"btc", name:"BITCOIN", cat:"CRYPTO", ex:"BINANCE", p:58400, c:"+4.80%", up:true, i:"₿", d:[10,15,20,25,30,40,50,65,70]},
+    {id:"eth", name:"ETHEREUM", cat:"CRYPTO", ex:"BINANCE", p:3200, c:"-1.20%", up:false, i:"Ξ", d:[20,18,19,16,15,14,12,13,10]}
+];
+
+let activeAsset = MarketData[0], currentCategory = "ALL", orderSide = "BUY", chartMode = "line", userBalance = 100000;
+let chartPoints = [...activeAsset.d], openPositions = [], tradeHistory = [];
+
+const $ = id => document.getElementById(id);
+const formatMoney = n => "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const getExactTime = () => {
+    let now = new Date();
+    return `${now.getDate()} ${now.toLocaleString('en-us',{month:'short'})}, ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+};
+
+function renderWatchlist() {
+    let q = $("search").value.toLowerCase(), w = $("watch"); w.innerHTML = "";
+    let f = MarketData.filter(a => (currentCategory === "ALL" || a.cat === currentCategory) && (a.name.toLowerCase().includes(q) || a.id.includes(q)));
+    $("count").textContent = f.length + " ASSETS";
+    f.forEach(a => {
+        let d = document.createElement("div"); d.className = "asset " + (a.id === activeAsset.id ? "active" : "");
+        d.innerHTML = `<div><div class="name">${a.name}</div><div class="meta">${a.ex} • ${a.cat}</div></div><div><div class="price">${formatMoney(a.p)}</div><div class="chg ${a.up ? 'up' : 'down'}">${a.c}</div></div>`;
+        d.onclick = () => { activeAsset = a; chartPoints = [...a.d]; clearDrawings(); updateUI(); };
+        w.appendChild(d);
+    });
+}
+function filterAssets(cat, btn) { currentCategory = cat; document.querySelectorAll(".cat").forEach(e => e.classList.remove("active")); btn.classList.add("active"); renderWatchlist(); }
+
+function updateUI() {
+    $("icon").textContent = activeAsset.i; $("symbol").textContent = activeAsset.name; $("details").textContent = activeAsset.ex + " • " + activeAsset.cat;
+    $("chartPrice").textContent = formatMoney(activeAsset.p); $("chartChange").textContent = activeAsset.c; $("chartChange").className = activeAsset.up ? "up" : "down";
+    $("orderTitle").textContent = activeAsset.name; $("orderPrice").value = formatMoney(activeAsset.p);
+    calculateMargin(); renderWatchlist(); drawChart();
+}
+
+// --- ORDER & FEES LOGIC ---
+function setOrderSide(side) {
+    orderSide = side; $("btn-buy").classList.toggle("active", side === "BUY"); $("btn-sell").classList.toggle("active", side === "SELL");
+    $("execute").className = "execute " + (side === "BUY" ? "buy" : "sell"); $("execute").textContent = "PLACE " + side + " ORDER";
+}
+
+function calculateMargin() {
+    let required = (+$("qty").value || 1) * activeAsset.p;
+    let platformFee = required * 0.05; // 5% fee
+    let taxes = required * 0.0018;     // 0.18% tax
+    let totalPayable = required + platformFee + taxes;
+
+    $("margin").textContent = formatMoney(required);
+    $("fee-platform").textContent = formatMoney(platformFee);
+    $("fee-taxes").textContent = formatMoney(taxes);
+    $("total").textContent = formatMoney(totalPayable);
+    return { required, platformFee, taxes, totalPayable };
+}
+
+function executeTrade() {
+    let qty = +$("qty").value || 0;
+    let fees = calculateMargin();
+    
+    if (qty < 1) return showToast("Enter valid quantity", "error");
+    if (fees.totalPayable > userBalance) return showToast("Insufficient balance for margin & fees", "error");
+    
+    userBalance -= fees.totalPayable; // Deduct total (Margin + Fees)
+    $("balance").textContent = formatMoney(userBalance);
+    
+    openPositions.unshift({ 
+        id: Date.now(), symbol: activeAsset.name, side: orderSide, qty: qty, 
+        entryPrice: activeAsset.p, feesPaid: (fees.platformFee + fees.taxes), time: getExactTime() 
+    });
+    
+    renderPositions(); showToast(`${orderSide} order executed successfully`, "success");
+}
+
+function renderPositions() {
+    let container = $("open-positions-list");
+    if (!openPositions.length) return container.innerHTML = '<div class="empty">No open positions. Place an order to begin.</div>';
+    
+    container.innerHTML = openPositions.map(pos => `
+        <div class="row">
+            <div><small>INSTRUMENT</small><b>${pos.symbol}</b><span class="time-stamp">${pos.time}</span></div>
+            <div><small>SIDE</small><b class="${pos.side === 'BUY' ? 'up' : 'down'}">${pos.side}</b></div>
+            <div><small>QTY</small><b>${pos.qty}</b></div>
+            <div><small>ENTRY PRICE</small><b>${formatMoney(pos.entryPrice)}</b></div>
+            <div><small>FEES PAID</small><b style="color:var(--r)">${formatMoney(pos.feesPaid)}</b></div>
+            <div><small>CMP</small><b id="cmp-${pos.id}">--</b></div>
+            <div><small>LIVE P&L</small><b id="pnl-${pos.id}">--</b></div>
+            <button class="close-btn" onclick="closePosition(${pos.id})">CLOSE</button>
+        </div>`).join("");
+    updateLivePnL(); 
+}
+
+function closePosition(id) {
+    let index = openPositions.findIndex(x => x.id === id); if (index < 0) return;
+    let pos = openPositions[index], asset = MarketData.find(a => a.name === pos.symbol), exitPrice = asset.p;
+    let grossPnl = pos.side === "BUY" ? (exitPrice - pos.entryPrice) * pos.qty : (pos.entryPrice - exitPrice) * pos.qty;
+    
+    // Return margin + Gross PnL to balance. Fees were already deducted.
+    userBalance += (pos.entryPrice * pos.qty) + grossPnl; 
+    $("balance").textContent = formatMoney(userBalance);
+    
+    tradeHistory.unshift({ 
+        symbol: pos.symbol, side: pos.side, qty: pos.qty, entry: pos.entryPrice, exit: exitPrice, 
+        fees: pos.feesPaid, pnl: grossPnl, time: pos.time, exitTime: getExactTime()
+    });
+    
+    openPositions.splice(index, 1); renderPositions(); renderHistory(); 
+    showToast(`Trade closed. Gross P&L: ${formatMoney(grossPnl)}`, grossPnl >= 0 ? "success" : "error");
+}
+
+function renderHistory() {
+    let container = $("trade-history-list");
+    if (!tradeHistory.length) return container.innerHTML = '<div class="empty">No trade history yet.</div>';
+    
+    container.innerHTML = tradeHistory.map(t => `
+        <div class="row history-row">
+            <div><small>INSTRUMENT</small><b>${t.symbol}</b><span class="time-stamp">${t.exitTime}</span></div>
+            <div><small>SIDE</small><b class="${t.side === 'BUY' ? 'up' : 'down'}">${t.side}</b></div>
+            <div><small>QTY</small><b>${t.qty}</b></div>
+            <div><small>ENTRY</small><b>${formatMoney(t.entry)}</b></div>
+            <div><small>EXIT</small><b>${formatMoney(t.exit)}</b></div>
+            <div><small>FEES PAID</small><b style="color:var(--r)">${formatMoney(t.fees)}</b></div>
+            <div><small>GROSS P&L</small><b class="${t.pnl >= 0 ? 'up' : 'down'}">${t.pnl >= 0 ? '+' : ''}${formatMoney(t.pnl)}</b></div>
+        </div>`).join("");
+}
+
+function updateLivePnL() {
+    let totalPnL = 0;
+    openPositions.forEach(pos => {
+        let asset = MarketData.find(a => a.name === pos.symbol), pnl = pos.side === "BUY" ? (asset.p - pos.entryPrice) * pos.qty : (pos.entryPrice - asset.p) * pos.qty;
+        totalPnL += pnl;
+        if ($(`pnl-${pos.id}`)) { $(`cmp-${pos.id}`).textContent = formatMoney(asset.p); $(`pnl-${pos.id}`).textContent = (pnl >= 0 ? "+" : "") + formatMoney(pnl); $(`pnl-${pos.id}`).className = pnl >= 0 ? "up" : "down"; }
+    });
+    $("total-live-pnl").textContent = (totalPnL >= 0 ? "+" : "") + formatMoney(totalPnL); $("total-live-pnl").className = totalPnL >= 0 ? "up" : "down";
+}
+
+// --- CHARTING & DRAWING TOOLS ---
+const canvas = $("canvas"), ctx = canvas.getContext("2d");
+let userDrawings = [], isDrawing = false, currentTempLine = null, currentDrawTool = 'crosshair', mousePos = null;
+
+function setDrawTool(tool) { currentDrawTool = tool; document.querySelectorAll('.draw-btn').forEach(b => b.classList.remove('active')); $(`tool-${tool}`).classList.add('active'); drawChart(); }
+function clearDrawings() { userDrawings = []; drawChart(); }
+
+canvas.addEventListener('mousedown', (e) => { if (currentDrawTool === 'crosshair') return; let r = canvas.getBoundingClientRect(); isDrawing = true; currentTempLine = { x1: e.clientX - r.left, y1: e.clientY - r.top, x2: e.clientX - r.left, y2: e.clientY - r.top, type: currentDrawTool }; });
+canvas.addEventListener('mousemove', (e) => { let r = canvas.getBoundingClientRect(); mousePos = {x: e.clientX - r.left, y: e.clientY - r.top}; if (isDrawing && currentTempLine) { currentTempLine.x2 = mousePos.x; currentTempLine.y2 = currentDrawTool === 'hline' ? currentTempLine.y1 : mousePos.y; } drawChart(); });
+canvas.addEventListener('mouseup', () => { if (isDrawing && currentTempLine) { userDrawings.push({...currentTempLine}); isDrawing = false; currentTempLine = null; } });
+canvas.addEventListener('mouseleave', () => { mousePos = null; isDrawing = false; currentTempLine = null; drawChart(); });
+
+function resizeCanvas() { let r = canvas.parentElement.getBoundingClientRect(), d = window.devicePixelRatio || 1; canvas.width = r.width * d; canvas.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); drawChart(); }
+
+function drawChart() {
+    let w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return;
+    ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#05090f"; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = "#101a27"; ctx.lineWidth = 1;
+    for(let i=1; i<8; i++){ let y = h*i/8; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+    for(let i=1; i<10; i++){ let x = w*i/10; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    
+    let min = Math.min(...chartPoints) * 0.98, max = Math.max(...chartPoints) * 1.02, dx = (w - 60) / (Math.max(1, chartPoints.length - 1)), scale = (h - 60) / (max - min);
+    let pts = chartPoints.map((val, i) => ({ x: 10 + i * dx, y: h - 30 - (val - min) * scale }));
+    
+    if(chartMode === "line"){
+        let g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, activeAsset.up ? "rgba(0,216,151,0.25)" : "rgba(255,77,90,0.25)"); g.addColorStop(1, "transparent");
+        ctx.beginPath(); pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)); ctx.lineTo(pts[pts.length-1].x, h); ctx.lineTo(pts[0].x, h); ctx.fillStyle = g; ctx.fill();
+        ctx.beginPath(); pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)); ctx.strokeStyle = activeAsset.up ? "#00d897" : "#ff4d5a"; ctx.lineWidth = 2.5; ctx.stroke();
+    } else {
+        pts.forEach((p, i) => { let bull = i === 0 || p.y <= pts[i-1].y, c = bull ? "#00d897" : "#ff4d5a"; ctx.strokeStyle = c; ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(p.x, p.y - 20); ctx.lineTo(p.x, p.y + 20); ctx.stroke(); ctx.fillRect(p.x - 5, p.y - 10, 10, 20); });
+    }
+
+    ctx.lineWidth = 2; ctx.strokeStyle = "#facc15"; 
+    userDrawings.forEach(d => { ctx.beginPath(); ctx.moveTo(d.x1, d.y1); ctx.lineTo(d.x2, d.y2); ctx.stroke(); });
+    if(currentTempLine) { ctx.beginPath(); ctx.moveTo(currentTempLine.x1, currentTempLine.y1); ctx.lineTo(currentTempLine.x2, currentTempLine.y2); ctx.stroke(); }
+
+    if(currentDrawTool === 'crosshair' && mousePos) {
+        ctx.setLineDash([4, 4]); ctx.strokeStyle = "#8b9bb4"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(mousePos.x, 0); ctx.lineTo(mousePos.x, h); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, mousePos.y); ctx.lineTo(w, mousePos.y); ctx.stroke(); ctx.setLineDash([]);
+        let hoverVal = min + ((h - 30 - mousePos.y) / scale);
+        ctx.fillStyle = "#15263b"; ctx.fillRect(w - 75, mousePos.y - 12, 75, 24); ctx.fillStyle = "white"; ctx.font = "12px Inter"; ctx.fillText(formatMoney(hoverVal), w - 70, mousePos.y + 4);
+    }
+}
+function setChartMode(m) { chartMode = m; $("btn-line").classList.toggle("active", m === "line"); $("btn-candle").classList.toggle("active", m === "candle"); drawChart(); }
+function showToast(msg, type) { let t = $("toast"); t.textContent = msg; t.className = "toast show " + type; clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => t.className = "toast", 3000); }
+
+function simulateMarket() {
+    MarketData.forEach(a => { let m = (Math.random() - 0.5) * a.p * 0.0002; a.p = Math.max(0.1, a.p + m); a.up = m >= 0; a.c = (m >= 0 ? "+" : "-") + Math.abs(m / a.p * 100).toFixed(2) + "%"; });
+    if(activeAsset) { chartPoints.push(chartPoints.at(-1) + (Math.random() - 0.5) * 5); if(chartPoints.length > 50) chartPoints.shift(); updateUI(); }
+    updateLivePnL(); setTimeout(simulateMarket, 1200);
+}
+
+window.addEventListener("resize", resizeCanvas); window.addEventListener("load", () => { updateUI(); resizeCanvas(); simulateMarket(); });
+</script>
 </body>
 </html>
