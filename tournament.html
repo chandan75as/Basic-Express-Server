@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeArena - Tournament Lobby</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/brain.js"></script>
+
+    <style>
+        .brand-logo {
+            font-size: 1.75rem; 
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 0.05em;
+            background: linear-gradient(to right, #34d399, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 0px 10px rgba(52, 211, 153, 0.4);
+        }
+
+        .tab-active { background-color: #1e293b; color: white; font-weight: bold; }
+        .tab-inactive { color: #94a3b8; font-weight: 500; }
+
+        .nav-active { color: #34d399; transform: scale(1.1); transition: all 0.2s ease-in-out; }
+        .nav-inactive { color: #64748b; transition: all 0.2s ease-in-out; }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .dur-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            transition: 0.2s;
+        }
+        .dur-btn.active {
+            background: #34d399;
+            color: #022c22;
+            border-color: #34d399;
+            box-shadow: 0 0 10px rgba(52,211,153,0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="w-full bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="brand-logo">TradeArena</div>
+
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-800 border border-amber-500/30 px-3 py-1.5 rounded-full flex items-center gap-2 cursor-pointer hover:bg-slate-700 transition" onclick="window.location.href='top-up.html'">
+                    <span class="text-lg">🪙</span>
+                    <span class="text-amber-400 font-bold font-mono" id="main-balance">500</span>
+                    <div class="bg-amber-500 text-slate-900 rounded-full w-5 h-5 flex items-center justify-center font-bold text-xs pb-0.5 shadow-[0_0_8px_rgba(245,158,11,0.6)]">+</div>
+                </div>
+                <div onclick="window.location.href='profile.html'" class="h-8 w-8 bg-cyan-600 rounded-full flex items-center justify-center font-bold shadow-lg shadow-cyan-500/20 cursor-pointer hover:bg-cyan-500 transition">
+                    U
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Lobby -->
+    <main class="flex-grow max-w-md mx-auto w-full p-4 flex flex-col gap-4">
+
+        <!-- Modified Tabs -->
+        <div class="flex bg-slate-900 rounded-lg p-1 border border-slate-800">
+            <button onclick="switchTab('upcoming')" id="tab-upcoming" class="flex-1 py-2 rounded text-sm transition tab-active">Upcoming</button>
+            <!-- Live ki jagah Joined -->
+            <button onclick="switchTab('joined')" id="tab-joined" class="flex-1 py-2 rounded text-sm transition tab-inactive hover:text-white">Joined</button>
+            <button onclick="switchTab('results')" id="tab-results" class="flex-1 py-2 rounded text-sm transition tab-inactive hover:text-white">Results</button>
+        </div>
+
+        <!-- UPCOMING CONTENT -->
+        <div id="content-upcoming" class="flex flex-col gap-4">
+            <div class="flex gap-2 overflow-x-auto pb-2 pt-1 scrollbar-hide" id="duration-filters">
+                <button class="dur-btn" onclick="setDuration(15, this)">15 Min</button>
+                <button class="dur-btn active" onclick="setDuration(30, this)">30 Min</button>
+                <button class="dur-btn" onclick="setDuration(60, this)">1 Hour</button>
+                <button class="dur-btn" onclick="setDuration(120, this)">2 Hour</button>
+                <button class="dur-btn" onclick="setDuration(240, this)">4 Hour</button>
+            </div>
+
+            <!-- Dynamic Matches Container -->
+            <div id="dynamic-tournaments" class="flex flex-col gap-5 pb-10"></div>
+        </div>
+
+        <!-- JOINED CONTENT -->
+        <div id="content-joined" class="hidden flex-col gap-5 pb-10">
+            <div id="joined-empty" class="text-center py-10">
+                <span class="text-4xl mb-2">🎮</span>
+                <h3 class="text-xl font-bold text-slate-300">No Joined Matches</h3>
+                <p class="text-slate-500 text-sm">Join a match to see it here.</p>
+            </div>
+            <div id="joined-tournaments" class="flex flex-col gap-5"></div>
+        </div>
+
+        <!-- RESULTS CONTENT -->
+        <div id="content-results" class="hidden flex-col gap-5 pb-10">
+            <div id="results-empty" class="text-center py-10">
+                <span class="text-4xl mb-2">🏆</span>
+                <h3 class="text-xl font-bold text-slate-300">No Past Results</h3>
+                <p class="text-slate-500 text-sm">Completed matches will appear here.</p>
+            </div>
+            <div id="results-tournaments" class="flex flex-col gap-5"></div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="w-full bg-slate-900 border-t border-slate-800 fixed bottom-0 z-50">
+        <div class="max-w-md mx-auto flex justify-around p-3">
+            <button onclick="window.location.href='tournament.html'" class="flex flex-col items-center nav-active">
+                <span class="text-xl">🏆</span>
+                <span class="text-[10px] font-bold mt-1">Tournaments</span>
+            </button>
+            <button onclick="window.location.href='wallet.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
+                <span class="text-xl">💼</span>
+                <span class="text-[10px] font-bold mt-1">Wallet</span>
+            </button>
+            <button onclick="window.location.href='profile.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
+                <span class="text-xl">👤</span>
+                <span class="text-[10px] font-bold mt-1">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        let balance = 500;
+        let activeDuration = 30; // Default 30 min
+        let timerIntervals = []; 
+
+        // Data arrays to track matches
+        let joinedMatches = [];
+        let pastMatches = [];
+
+        // ==========================================
+        // 1. AUTO-GENERATION ALGORITHM
+        // ==========================================
+        function getNextSlots(intervalMins) {
+            let slots = [];
+            let totalCards = (24 * 60) / intervalMins; 
+
+            let now = new Date();
+            let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            let msInterval = intervalMins * 60 * 1000;
+
+            let elapsed = now.getTime() - startOfDay;
+            let nextSlotMs = startOfDay + Math.ceil(elapsed / msInterval) * msInterval;
+
+            for(let i = 0; i < totalCards; i++) {
+                slots.push(new Date(nextSlotMs + (i * msInterval)));
+            }
+            return slots;
+        }
+
+        function formatTime(dateObj) {
+            return dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatDay(dateObj) {
+            let today = new Date().getDate();
+            if(dateObj.getDate() === today) return "Today";
+            if(dateObj.getDate() === today + 1) return "Tomorrow";
+            return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // Check if user already joined an overlapping slot
+        function hasTimeConflict(newStart, newEnd) {
+            for(let m of joinedMatches) {
+                // Agar naye match ka time kisi purane joined match se overlap karta hai
+                if (newStart < m.endTime && newEnd > m.startTime) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Check if card is already in joined (so we don't show it in Upcoming)
+        function isAlreadyJoined(startTimeMs, durationMins) {
+            let id = `${startTimeMs}-${durationMins}`;
+            return joinedMatches.some(m => m.uniqueId === id) || pastMatches.some(m => m.uniqueId === id);
+        }
+
+        // ==========================================
+        // 2. RENDER MATCHES (UPCOMING)
+        // ==========================================
+        function renderTournaments() {
+            let container = document.getElementById('dynamic-tournaments');
+            container.innerHTML = ""; 
+
+            timerIntervals.forEach(clearInterval);
+            timerIntervals = [];
+
+            let slots = getNextSlots(activeDuration);
+
+            // PRIZE POOL LOGIC (10x of Entry Fee)
+            let fee = activeDuration === 15 ? 20 : activeDuration === 30 ? 50 : activeDuration === 60 ? 100 : activeDuration === 120 ? 200 : 500;
+            let pool = fee * 10; // Exact 10x
+            let name = activeDuration >= 60 ? `${activeDuration/60} Hour Marathon` : `${activeDuration} Min Clash`;
+
+            slots.forEach((slotDate, index) => {
+                let timestamp = slotDate.getTime();
+
+                // Agar user ne ye exact match join kar liya hai, toh isko Upcoming me mat dikhao
+                if(isAlreadyJoined(timestamp, activeDuration)) return;
+
+                let cardId = `tourney-${activeDuration}-${index}`;
+                let spotsFilled = Math.floor(Math.random() * 40) + 20;
+
+                let html = `
+                <div id="card-${cardId}" class="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-lg relative">
+                    <!-- 5% Platform Fee -->
+                    <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg z-10">5% Platform Fee</div>
+
+                    <div class="p-4 border-b border-slate-800 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/40 to-transparent"></div>
+                        <h2 class="text-xl font-black text-white relative z-10 uppercase italic tracking-wide">${name}</h2>
+                        <p class="text-xs text-slate-400 relative z-10">Asset: BTC & NIFTY 50</p>
+                    </div>
+
+                    <div class="p-4 grid grid-cols-3 gap-4 text-center">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-slate-400">Prize Pool</span>
+                            <span class="text-emerald-400 font-bold text-lg">🪙 ${pool}</span>
+                        </div>
+                        <div class="flex flex-col border-x border-slate-800">
+                            <span class="text-xs text-slate-400">Entry Fee</span>
+                            <span class="text-amber-400 font-bold text-lg">🪙 ${fee}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xs text-slate-400">Start Time</span>
+                            <span class="text-cyan-400 font-bold text-sm mt-1">${formatTime(slotDate)}</span>
+                        </div>
+                    </div>
+
+                    <div class="px-4 pb-2">
+                        <div class="flex justify-between text-xs mb-1 font-medium">
+                            <span class="text-slate-300">Spots: ${spotsFilled} / 100</span>
+                            <span class="${index < 2 ? 'text-amber-400 font-mono' : 'text-slate-400 font-mono'}" id="timer-${cardId}">
+                                ${index < 2 ? 'Calculating...' : `${formatDay(slotDate)}`}
+                            </span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2.5 mb-2">
+                            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-2.5 rounded-full" style="width: ${spotsFilled}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-slate-950/50 flex gap-2">
+                        <button onclick="joinTournament(${fee}, '${name}', '${cardId}', ${timestamp}, ${activeDuration}, ${pool})" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold uppercase py-3 rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.4)] transition transform active:scale-95">
+                            Join Now (🪙 ${fee})
+                        </button>
+                    </div>
+                </div>`;
+
+                container.insertAdjacentHTML('beforeend', html);
+                if(index < 2) startLiveTimer(cardId, timestamp);
+            });
+        }
+
+        // ==========================================
+        // 3. JOIN LOGIC (Save Money System)
+        // ==========================================
+        function joinTournament(fee, name, cardId, startTimeMs, duration, pool) {
+            let endTimeMs = startTimeMs + (duration * 60 * 1000);
+
+            // Check Conflict
+            if (hasTimeConflict(startTimeMs, endTimeMs)) {
+                alert("⚠️ Aap already is time ke aas-paas ek match join kar chuke hain. Apna paisa bachaiye aur ek time par ek hi tournament kheliye!");
+                return;
+            }
+
+            if (balance >= fee) {
+                let confirmJoin = confirm(`Pay 🪙 ${fee} to join '${name}'?`);
+                if(confirmJoin) {
+                    balance -= fee;
+                    document.getElementById('main-balance').innerText = balance;
+
+                    // Save to joined array
+                    joinedMatches.push({
+                        uniqueId: `${startTimeMs}-${duration}`,
+                        name, fee, pool, startTime: startTimeMs, endTime: endTimeMs, duration
+                    });
+
+                    // Remove from upcoming screen
+                    let card = document.getElementById(`card-${cardId}`);
+                    if(card) card.remove();
+
+                    // Update UI
+                    renderJoined();
+                    alert("🎉 Successfully Joined! Ye match ab 'Joined' tab mein milega.");
+                }
+            } else {
+                alert(`Insufficient Coins! Redirecting to Top-up page.`);
+                window.location.href = 'top-up.html';
+            }
+        }
+
+        // ==========================================
+        // 4. RENDER JOINED & RESULTS TABS
+        // ==========================================
+        function renderJoined() {
+            let container = document.getElementById('joined-tournaments');
+            let emptyState = document.getElementById('joined-empty');
+
+            container.innerHTML = "";
+            if (joinedMatches.length === 0) {
+                emptyState.style.display = "block";
+                return;
+            }
+            emptyState.style.display = "none";
+
+            joinedMatches.forEach((m, idx) => {
+                let dateObj = new Date(m.startTime);
+                let html = `
+                <div class="bg-slate-900 border border-emerald-500/50 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.1)] relative">
+                    <div class="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg z-10">Joined ✅</div>
+                    <div class="p-4 border-b border-slate-800">
+                        <h2 class="text-xl font-black text-white uppercase italic tracking-wide">${m.name}</h2>
+                        <div class="text-sm text-cyan-400 font-bold mt-1">Starts: ${formatDay(dateObj)} at ${formatTime(dateObj)}</div>
+                    </div>
+                    <div class="p-4 grid grid-cols-2 gap-4 text-center">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-slate-400">Prize Pool</span>
+                            <span class="text-emerald-400 font-bold text-lg">🪙 ${m.pool}</span>
+                        </div>
+                        <div class="flex flex-col border-l border-slate-800">
+                            <span class="text-xs text-slate-400">Entry Fee</span>
+                            <span class="text-amber-400 font-bold text-lg">Paid (🪙 ${m.fee})</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-slate-950/50">
+                        <button onclick="window.location.href='dashboard.html?startTime=${m.startTime}'" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold uppercase py-3 rounded-lg shadow-[0_0_15px_rgba(37,99,235,0.4)] transition">
+                            VISIT TOURNAMENT ➔
+                        </button>
+                    </div>
+                </div>`;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function renderResults() {
+            let container = document.getElementById('results-tournaments');
+            let emptyState = document.getElementById('results-empty');
+
+            container.innerHTML = "";
+            if (pastMatches.length === 0) {
+                emptyState.style.display = "block";
+                return;
+            }
+            emptyState.style.display = "none";
+
+            pastMatches.forEach((m) => {
+                let dateObj = new Date(m.startTime);
+                let html = `
+                <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden opacity-75">
+                    <div class="p-4 border-b border-slate-800">
+                        <h2 class="text-lg font-black text-slate-400 uppercase italic tracking-wide">${m.name}</h2>
+                        <div class="text-xs text-slate-500 mt-1">Played: ${formatDay(dateObj)} at ${formatTime(dateObj)}</div>
+                    </div>
+                    <div class="p-3 bg-slate-950 text-center">
+                        <button class="w-full bg-slate-800 text-slate-400 font-bold uppercase py-2 rounded-lg cursor-not-allowed">
+                            Match Ended - Calculating Ranks
+                        </button>
+                    </div>
+                </div>`;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // Background Checker: Moves matches from Joined to Results when time is over
+        setInterval(() => {
+            let now = Date.now();
+            let moved = false;
+
+            joinedMatches = joinedMatches.filter(m => {
+                if (now > m.endTime) {
+                    pastMatches.push(m);
+                    moved = true;
+                    return false; // Remove from joined
+                }
+                return true;
+            });
+
+            if(moved) {
+                renderJoined();
+                renderResults();
+            }
+        }, 5000); // Check every 5 seconds
+
+
+        // ==========================================
+        // 5. UTILITIES
+        // ==========================================
+        function startLiveTimer(cardId, targetTimeMs) {
+            let timerEl = document.getElementById(`timer-${cardId}`);
+            if(!timerEl) return;
+            let interval = setInterval(() => {
+                let now = new Date().getTime();
+                let diff = targetTimeMs - now;
+
+                if(diff <= 0) {
+                    timerEl.innerText = "Match Started!";
+                    timerEl.classList.replace('text-amber-400', 'text-emerald-400');
+                    clearInterval(interval);
+                    // Match start hote hi UI re-render kar do taaki purane card hat jayein
+                    renderTournaments(); 
+                } else {
+                    let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    let s = Math.floor((diff % (1000 * 60)) / 1000);
+                    timerEl.innerText = `Starts in ${h > 0 ? `${h}h ` : ''}${m}m ${s}s`;
+                }
+            }, 1000);
+            timerIntervals.push(interval);
+        }
+
+        function setDuration(mins, btnEl) {
+            activeDuration = mins;
+            document.querySelectorAll('.dur-btn').forEach(btn => btn.classList.remove('active'));
+            btnEl.classList.add('active');
+            renderTournaments();
+        }
+
+        function switchTab(tabName) {
+            let tabs = ['upcoming', 'joined', 'results'];
+            tabs.forEach(t => {
+                let btn = document.getElementById(`tab-${t}`);
+                let content = document.getElementById(`content-${t}`);
+                if(t === tabName) {
+                    btn.className = "flex-1 py-2 rounded text-sm transition tab-active";
+                    content.classList.replace('hidden', 'flex');
+                } else {
+                    btn.className = "flex-1 py-2 rounded text-sm transition tab-inactive hover:text-white";
+                    content.classList.replace('flex', 'hidden');
+                }
+            });
+        }
+
+        window.onload = () => {
+            renderTournaments();
+            renderJoined();
+            renderResults();
+        };
+    </script>
+</body>
+</html>
