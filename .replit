@@ -37,3 +37,11 @@ externalPort = 8080
 
 [deployment]
 deploymentTarget = "cloudrun"
+
+[userenv]
+
+[userenv.shared]
+FIREBASE_API_KEY = "AIzaSyBerRYzu1EZ5U4CJBHsRl48a8RL2t9opw0"
+FIREBASE_AUTH_DOMAIN = "trade-abhyaas.firebaseapp.com"
+FIREBASE_DATABASE_URL = "[https://trade-abhyaas-default-rtdb.firebaseio.com](https://trade-abhyaas-default-rtdb.firebaseio.com)"
+FIREBASE_PROJECT_ID = "trade-abhyaas"
