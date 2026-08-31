@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Abhyaas - Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .brand-logo {
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, #34d399 0%, #22d3ee 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.3));
+        }
+
+        .nav-active { color: #34d399; transform: scale(1.08); transition: all 0.2s ease-in-out; }
+        .nav-inactive { color: #64748b; transition: all 0.2s ease-in-out; }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(13, 20, 33, 0.95), rgba(7, 11, 19, 0.95));
+            border: 1px solid rgba(52, 211, 153, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .glass-card:hover {
+            border-color: rgba(52, 211, 153, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-[#030712] text-slate-100 font-sans min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+
+    <!-- Loading Screen -->
+    <div id="page-loader" class="fixed inset-0 z-50 bg-[#030712] flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="relative flex items-center justify-center">
+            <div class="w-20 h-20 border-4 border-emerald-500/20 border-t-emerald-400 rounded-full animate-spin"></div>
+            <div class="absolute text-emerald-400 font-black text-xl animate-pulse">TA</div>
+        </div>
+        <h2 class="mt-4 text-xl font-black tracking-widest text-white animate-pulse bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">TRADE ABHYAAS</h2>
+        <p class="text-slate-500 text-xs mt-1">Loading Secure Wallet...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="w-full bg-[#070e17]/90 border-b border-slate-800/80 px-4 md:px-8 py-4 sticky top-0 z-40 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
+            <div class="brand-logo text-lg md:text-2xl flex items-center gap-2.5 truncate cursor-pointer" onclick="window.location.href='tournament.html'">
+                <span class="bg-emerald-500/10 border border-emerald-500/30 p-1.5 rounded-xl text-base shadow-lg shadow-emerald-500/10">📈</span>
+                <span class="truncate">Trade Abhyaas</span>
+            </div>
+
+            <div class="flex items-center gap-3 md:gap-4 shrink-0">
+                <div class="bg-slate-900/90 border border-amber-500/40 px-3.5 py-2 rounded-xl flex items-center gap-2.5 cursor-pointer hover:bg-slate-800 transition shadow-lg shadow-amber-500/5">
+                    <span class="text-base">🪙</span>
+                    <span class="text-amber-400 font-bold font-mono text-sm md:text-base" id="header-total-balance">500</span>
+                </div>
+                <div onclick="window.location.href='profile.html'" class="h-9 w-9 bg-gradient-to-tr from-cyan-600 to-teal-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-cyan-500/20 cursor-pointer hover:scale-105 transition text-white">
+                    U
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Wallet Container -->
+    <main class="flex-grow max-w-5xl mx-auto w-full p-4 md:p-8 flex flex-col gap-6 mb-24 md:mb-12">
+
+        <h1 class="text-2xl md:text-3xl font-black text-white tracking-wide uppercase italic">My Wallet 💼</h1>
+
+        <!-- Wallet Breakdown Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Deposit Balance -->
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute top-0 right-0 bg-emerald-500/10 text-emerald-400 text-[11px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-emerald-500/20">Trading Capital</div>
+                <div>
+                    <span class="text-3xl mb-3 block">💰</span>
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Deposit Balance</h3>
+                    <div class="text-2xl md:text-3xl font-black text-emerald-400 font-mono mt-1" id="deposit-bal">🪙 500</div>
+                    <p class="text-slate-500 text-xs mt-2">Used for tournament entry fees and live trades.</p>
+                </div>
+                <button onclick="openDepositModal()" class="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold uppercase py-2.5 rounded-xl text-xs tracking-wider transition shadow-lg shadow-emerald-600/20">
+                    Deposit Funds +
+                </button>
+            </div>
+
+            <!-- Withdrawal Winnings -->
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute top-0 right-0 bg-cyan-500/10 text-cyan-400 text-[11px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-cyan-500/20">Withdrawable</div>
+                <div>
+                    <span class="text-3xl mb-3 block">🏆</span>
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Winning Earnings</h3>
+                    <div class="text-2xl md:text-3xl font-black text-cyan-400 font-mono mt-1" id="withdrawal-bal">🪙 0</div>
+                    <p class="text-slate-500 text-xs mt-2">Prizes won from tournaments. Ready for instant payout.</p>
+                </div>
+                <button onclick="openWithdrawModal()" class="mt-6 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold uppercase py-2.5 rounded-xl text-xs tracking-wider transition shadow-lg shadow-cyan-600/20">
+                    Withdraw ➔
+                </button>
+            </div>
+
+            <!-- Bonus Balance -->
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute top-0 right-0 bg-purple-500/10 text-purple-400 text-[11px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-purple-500/20">Promotional</div>
+                <div>
+                    <span class="text-3xl mb-3 block">🎁</span>
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Bonus Balance</h3>
+                    <div class="text-2xl md:text-3xl font-black text-purple-400 font-mono mt-1" id="bonus-bal">🪙 100</div>
+                    <p class="text-slate-500 text-xs mt-2">Free promotional credits applied towards specific tourneys.</p>
+                </div>
+                <button onclick="alert('Bonus coins are automatically applied during eligible tournament fee deductions!')" class="mt-6 w-full bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 font-extrabold uppercase py-2.5 rounded-xl text-xs tracking-wider border border-purple-500/30 transition">
+                    View Terms
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Transaction History -->
+        <div class="glass-card rounded-2xl p-6 mt-4">
+            <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-wide">Recent Transactions</h2>
+            <div id="tx-container" class="flex flex-col gap-3">
+                <div class="flex justify-between items-center p-3.5 bg-slate-950/50 rounded-xl border border-slate-800/80">
+                    <div>
+                        <div class="font-bold text-sm text-emerald-400">Welcome Deposit Bonus</div>
+                        <div class="text-xs text-slate-500">Today, 10:00 AM</div>
+                    </div>
+                    <div class="font-mono font-bold text-emerald-400">+🪙 500</div>
+                </div>
+                <div class="flex justify-between items-center p-3.5 bg-slate-950/50 rounded-xl border border-slate-800/80">
+                    <div>
+                        <div class="font-bold text-sm text-purple-400">Sign-up Promotional Credit</div>
+                        <div class="text-xs text-slate-500">Today, 10:00 AM</div>
+                    </div>
+                    <div class="font-mono font-bold text-purple-400">+🪙 100</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-emerald-500/30">
+            <h2 class="text-xl font-black text-white mb-2">Deposit Funds</h2>
+            <p class="text-xs text-slate-400 mb-4">Add virtual coins to your deposit balance for tournament entries.</p>
+            <input type="number" id="deposit-amount" placeholder="Enter amount (e.g. 500)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-mono mb-4 focus:outline-none focus:border-emerald-500">
+            <div class="flex gap-3">
+                <button onclick="closeDepositModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl text-sm transition">Cancel</button>
+                <button onclick="processDeposit()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-500/20">Pay & Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-cyan-500/30">
+            <h2 class="text-xl font-black text-white mb-2">Withdraw Winnings</h2>
+            <p class="text-xs text-slate-400 mb-4">Transfer your tournament prize earnings to your bank account.</p>
+            <input type="number" id="withdraw-amount" placeholder="Enter amount to withdraw" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-mono mb-4 focus:outline-none focus:border-cyan-500">
+            <div class="flex gap-3">
+                <button onclick="closeWithdrawModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl text-sm transition">Cancel</button>
+                <button onclick="processWithdraw()" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 rounded-xl text-sm transition shadow-lg shadow-cyan-500/20">Request Payout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="w-full bg-[#070e17]/95 border-t border-slate-800/80 fixed bottom-0 z-40 backdrop-blur-xl">
+        <div class="max-w-md mx-auto flex justify-around p-3">
+            <button onclick="window.location.href='tournament.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
+                <span class="text-xl">🏆</span>
+                <span class="text-[10px] font-bold mt-1">Tournaments</span>
+            </button>
+            <button onclick="window.location.href='wallet.html'" class="flex flex-col items-center nav-active">
+                <span class="text-xl">💼</span>
+                <span class="text-[10px] font-bold mt-1">Wallet</span>
+            </button>
+            <button onclick="window.location.href='profile.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
+                <span class="text-xl">👤</span>
+                <span class="text-[10px] font-bold mt-1">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Load separate wallet balances from localStorage or initialize defaults
+        let depositBal = parseInt(localStorage.getItem('ta_deposit')) || 500;
+        let withdrawalBal = parseInt(localStorage.getItem('ta_withdrawal')) || 0;
+        let bonusBal = parseInt(localStorage.getItem('ta_bonus')) || 100;
+
+        function updateWalletUI() {
+            document.getElementById('deposit-bal').innerText = `🪙 ${depositBal}`;
+            document.getElementById('withdrawal-bal').innerText = `🪙 ${withdrawalBal}`;
+            document.getElementById('bonus-bal').innerText = `🪙 ${bonusBal}`;
+            
+            // Total available funds for tournaments can sync back to main balance if needed
+            let total = depositBal + withdrawalBal;
+            document.getElementById('header-total-balance').innerText = total;
+            localStorage.setItem('ta_balance', total);
+            localStorage.setItem('ta_deposit', depositBal);
+            localStorage.setItem('ta_withdrawal', withdrawalBal);
+            localStorage.setItem('ta_bonus', bonusBal);
+        }
+
+        function openDepositModal() {
+            document.getElementById('deposit-modal').classList.remove('hidden');
+        }
+        function closeDepositModal() {
+            document.getElementById('deposit-modal').classList.add('hidden');
+        }
+        function processDeposit() {
+            let amt = parseInt(document.getElementById('deposit-amount').value);
+            if(amt && amt > 0) {
+                depositBal += amt;
+                updateWalletUI();
+                closeDepositModal();
+                alert(`Successfully deposited 🪙 ${amt}!`);
+                document.getElementById('deposit-amount').value = '';
+            } else {
+                alert('Please enter a valid deposit amount.');
+            }
+        }
+
+        function openWithdrawModal() {
+            document.getElementById('withdraw-modal').classList.remove('hidden');
+        }
+        function closeWithdrawModal() {
+            document.getElementById('withdraw-modal').classList.add('hidden');
+        }
+        function processWithdraw() {
+            let amt = parseInt(document.getElementById('withdraw-amount').value);
+            if(amt && amt > 0) {
+                if(amt <= withdrawalBal) {
+                    withdrawalBal -= amt;
+                    updateWalletUI();
+                    closeWithdrawModal();
+                    alert(`Payout request of 🪙 ${amt} processed successfully!`);
+                    document.getElementById('withdraw-amount').value = '';
+                } else {
+                    alert('Insufficient winnings balance for withdrawal.');
+                }
+            } else {
+                alert('Please enter a valid withdrawal amount.');
+            }
+        }
+
+        window.onload = () => {
+            updateWalletUI();
+            setTimeout(() => {
+                const loader = document.getElementById('page-loader');
+                if(loader) {
+                    loader.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => loader.remove(), 700);
+                }
+            }, 300);
+        };
+    </script>
+</body>
+</html>
