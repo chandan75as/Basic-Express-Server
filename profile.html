@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Abhyaas - User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .brand-logo {
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, #34d399 0%, #22d3ee 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.3));
+        }
+
+        .nav-active { color: #34d399; transform: scale(1.08); transition: all 0.2s ease-in-out; }
+        .nav-inactive { color: #64748b; transition: all 0.2s ease-in-out; }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(13, 20, 33, 0.95), rgba(7, 11, 19, 0.95));
+            border: 1px solid rgba(52, 211, 153, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .glass-card:hover {
+            border-color: rgba(52, 211, 153, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-[#030712] text-slate-100 font-sans min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+
+    <!-- Loading Screen -->
+    <div id="page-loader" class="fixed inset-0 z-50 bg-[#030712] flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="relative flex items-center justify-center">
+            <div class="w-20 h-20 border-4 border-emerald-500/20 border-t-emerald-400 rounded-full animate-spin"></div>
+            <div class="absolute text-emerald-400 font-black text-xl animate-pulse">TA</div>
+        </div>
+        <h2 class="mt-4 text-xl font-black tracking-widest text-white animate-pulse bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">TRADE ABHYAAS</h2>
+        <p class="text-slate-500 text-xs mt-1">Loading User Profile...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="w-full bg-[#070e17]/90 border-b border-slate-800/80 px-4 md:px-8 py-4 sticky top-0 z-40 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
+            <div class="brand-logo text-lg md:text-2xl flex items-center gap-2.5 truncate cursor-pointer" onclick="window.location.href='tournament.html'">
+                <span class="bg-emerald-500/10 border border-emerald-500/30 p-1.5 rounded-xl text-base shadow-lg shadow-emerald-500/10">📈</span>
+                <span class="truncate">Trade Abhyaas</span>
+            </div>
+
+            <div class="flex items-center gap-3 md:gap-4 shrink-0">
+                <div class="bg-slate-900/90 border border-amber-500/40 px-3.5 py-2 rounded-xl flex items-center gap-2.5 cursor-pointer hover:bg-slate-800 transition shadow-lg shadow-amber-500/5" onclick="window.location.href='wallet.html'">
+                    <span class="text-base">🪙</span>
+                    <span class="text-amber-400 font-bold font-mono text-sm md:text-base" id="header-balance">500</span>
+                </div>
+                <div class="h-9 w-9 bg-gradient-to-tr from-cyan-600 to-teal-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-cyan-500/25 text-white">
+                    U
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Profile Container -->
+    <main class="flex-grow max-w-4xl mx-auto w-full p-4 md:p-8 flex flex-col gap-6 mb-24 md:mb-12">
+
+        <h1 class="text-2xl md:text-3xl font-black text-white tracking-wide uppercase italic">Trader Profile 👤</h1>
+
+        <!-- User Identity Card -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-emerald-500/10 text-emerald-400 text-[11px] font-bold px-3.5 py-1.5 rounded-bl-xl border-l border-b border-emerald-500/20 flex items-center gap-1.5">
+                <span>🛡️ Verified Trader</span>
+            </div>
+            
+            <div class="relative">
+                <div class="h-24 w-24 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-2xl flex items-center justify-center text-4xl font-black shadow-xl shadow-emerald-500/20 text-slate-950">
+                    TA
+                </div>
+            </div>
+
+            <div class="flex flex-col text-center md:text-left gap-1 flex-grow">
+                <h2 class="text-2xl font-black text-white tracking-wide" id="profile-name">Pro Trader</h2>
+                <p class="text-slate-400 text-xs font-mono" id="profile-email">trader.abhyaas@gmail.com</p>
+                <div class="flex flex-wrap gap-2 justify-center md:justify-start mt-3">
+                    <span class="bg-slate-900 border border-slate-700 text-slate-300 text-[11px] font-bold px-3 py-1 rounded-lg">ID: #TA-84920</span>
+                    <span class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold px-3 py-1 rounded-lg">Level 4 Elite</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Stats Bar -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card rounded-xl p-4 text-center">
+                <div class="text-slate-400 text-xs uppercase font-bold">Tournaments</div>
+                <div class="text-xl font-black text-white font-mono mt-1">18 Played</div>
+            </div>
+            <div class="glass-card rounded-xl p-4 text-center">
+                <div class="text-slate-400 text-xs uppercase font-bold">Win Rate</div>
+                <div class="text-xl font-black text-emerald-400 font-mono mt-1">68.5%</div>
+            </div>
+            <div class="glass-card rounded-xl p-4 text-center">
+                <div class="text-slate-400 text-xs uppercase font-bold">Total Winnings</div>
+                <div class="text-xl font-black text-cyan-400 font-mono mt-1">🪙 4,250</div>
+            </div>
+            <div class="glass-card rounded-xl p-4 text-center">
+                <div class="text-slate-400 text-xs uppercase font-bold">Global Rank</div>
+                <div class="text-xl font-black text-amber-400 font-mono mt-1">#142</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons & Settings Grid -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col gap-4">
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Account Management & Settings</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button onclick="alert('KYC is already verified successfully!')" class="flex items-center justify-between p-4 bg-slate-950/60 hover:bg-slate-900 border border-slate-800 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🪪</span>
+                        <div class="text-left"><div class="font-bold text-sm text-slate-200">KYC Verification</div><div class="text-xs text-emerald-400">Verified & Active</div></div>
+                    </div>
+                    <span class="text-slate-500 group-hover:translate-x-1 transition">➔</span>
+                </button>
+
+                <button onclick="window.location.href='wallet.html'" class="flex items-center justify-between p-4 bg-slate-950/60 hover:bg-slate-900 border border-slate-800 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">💳</span>
+                        <div class="text-left"><div class="font-bold text-sm text-slate-200">Bank & Payout Details</div><div class="text-xs text-slate-400">Manage UPI & Bank Accounts</div></div>
+                    </div>
+                    <span class="text-slate-500 group-hover:translate-x-1 transition">➔</span>
+                </button>
+
+                <button onclick="alert('Notification preferences updated successfully.')" class="flex items-center justify-between p-4 bg-slate-950/60 hover:bg-slate-900 border border-slate-800 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🔔</span>
+                        <div class="text-left"><div class="font-bold text-sm text-slate-200">Notifications & Alerts</div><div class="text-xs text-slate-400">Match start reminders & updates</div></div>
+                    </div>
+                    <span class="text-slate-500 group-hover:translate-x-1 transition">➔</span>
+                </button>
+
+                <button onclick="alert('Trade Abhyaas v2.5.0 • All systems secure.')" class="flex items-center justify-between p-4 bg-slate-950/60 hover:bg-slate-900 border border-slate-800 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🔒</span>
+                        <div class="text-left"><div class="font-bold text-sm text-slate-200">Security & Privacy</div><div class="text-xs text-slate-400">Google Secure Auth Linked</div></div>
+                    </div>
+                    <span class="text-slate-500 group-hover:translate-x-1 transition">➔</span>
+                </button>
+
+                <button onclick="alert('For support, email support@tradeabhyaas.com or use our 24/7 live chat in tournaments.')" class="flex items-center justify-between p-4 bg-slate-950/60 hover:bg-slate-900 border border-slate-800 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🎧</span>
+                        <div class="text-left"><div class="font-bold text-sm text-slate-200">Help & Support Desk</div><div class="text-xs text-slate-400">FAQ and 24/7 assistance</div></div>
+                    </div>
+                    <span class="text-slate-500 group-hover:translate-x-1 transition">➔</span>
+                </button>
+
+                <button onclick="alert('Trade Abhyaas is a risk-free virtual trading tournament simulation platform.')" class="flex items-center justify-between p-4 bg-slate-950/60 hover:bg-slate-900 border border-slate-800 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">📜</span>
+                        <div class="text-left"><div class="font-bold text-sm text-slate-200">Terms & Conditions</div><div class="text-xs text-slate-400">Fair play policies & rules</div></div>
+                    </div>
+                    <span class="text-slate-500 group-hover:translate-x-1 transition">➔</span>
+                </button>
+            </div>
+
+            <!-- Logout Button -->
+            <button onclick="logoutSession()" class="mt-4 w-full bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 font-extrabold uppercase py-3.5 rounded-xl text-xs tracking-wider transition shadow-lg flex items-center justify-center gap-2">
+                <span>🚪</span> Sign Out / Logout
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="w-full bg-[#070e17]/95 border-t border-slate-800/80 fixed bottom-0 z-40 backdrop-blur-xl">
+        <div class="max-w-md mx-auto flex justify-around p-3">
+            <button onclick="window.location.href='tournament.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
+                <span class="text-xl">🏆</span>
+                <span class="text-[10px] font-bold mt-1">Tournaments</span>
+            </button>
+            <button onclick="window.location.href='wallet.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
+                <span class="text-xl">💼</span>
+                <span class="text-[10px] font-bold mt-1">Wallet</span>
+            </button>
+            <button onclick="window.location.href='profile.html'" class="flex flex-col items-center nav-active">
+                <span class="text-xl">👤</span>
+                <span class="text-[10px] font-bold mt-1">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        let balance = localStorage.getItem('ta_balance') || 500;
+        document.getElementById('header-balance').innerText = balance;
+
+        function logoutSession() {
+            if(confirm("Are you sure you want to sign out?")) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('page-loader');
+                if(loader) {
+                    loader.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => loader.remove(), 700);
+                }
+            }, 300);
+        };
+    </script>
+</body>
+</html>
