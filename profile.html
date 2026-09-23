@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Abhyaas - My Profile</title>
+    <title>Trade Abhyaas - Profile</title>
     <meta name="description" content="Manage your Trade Abhyaas Profile.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -19,143 +19,144 @@
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
-            background: radial-gradient(circle at 50% -15%, rgba(16, 185, 129, .11), transparent 34%), 
-                        radial-gradient(circle at 90% 25%, rgba(6, 182, 212, .07), transparent 25%), #020617;
+            background: radial-gradient(circle at 50% -15%, rgba(16, 185, 129, .05), transparent 34%), 
+                        radial-gradient(circle at 90% 25%, rgba(6, 182, 212, .05), transparent 25%), #020617;
         }
         .ambient { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
         .ambient::before {
-            content: ""; position: absolute; inset: 0; opacity: .22;
+            content: ""; position: absolute; inset: 0; opacity: .15;
             background-image: linear-gradient(rgba(148, 163, 184, .055) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, .055) 1px, transparent 1px);
             background-size: 52px 52px; mask-image: linear-gradient(to bottom, #000 0, transparent 72%);
         }
-        .orb { position: absolute; width: 420px; height: 420px; border-radius: 999px; filter: blur(90px); opacity: .12; }
-        .orb-1 { background: #10b981; top: 4%; left: -12%; }
-        .orb-2 { background: #06b6d4; top: 22%; right: -14%; }
-        .orb-3 { background: #8b5cf6; bottom: -10%; left: 36%; }
         
-        .glass { background: rgba(15, 23, 42, .58); border: 1px solid rgba(148, 163, 184, .1); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
-        .glass-strong { background: linear-gradient(145deg, rgba(15, 23, 42, .88), rgba(2, 6, 23, .76)); border: 1px solid rgba(148, 163, 184, .12); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+        .glass { background: rgba(15, 23, 42, .4); border: 1px solid rgba(148, 163, 184, .08); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .glass-strong { background: linear-gradient(145deg, rgba(15, 23, 42, .7), rgba(2, 6, 23, .6)); border: 1px solid rgba(148, 163, 184, .1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         
-        .nav-active { color: #34d399; transform: scale(1.05); transition: all .2s ease-in-out; }
         .nav-inactive { color: #64748b; transition: all .2s ease-in-out; }
     </style>
 </head>
 <body class="min-h-screen text-slate-100 font-sans antialiased overflow-x-hidden flex flex-col">
 
-    <div class="ambient">
-        <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
-    </div>
+    <div class="ambient"></div>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 border-b border-white/[0.06] bg-slate-950/65 backdrop-blur-2xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="h-[72px] flex items-center justify-between">
-                <a href="tournament.html" class="group flex items-center gap-3">
-                    <div class="relative w-10 h-10 rounded-xl flex items-center justify-center bg-slate-800 border border-white/10 shadow-lg hover:bg-slate-700 transition">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+    <!-- Minimal Header -->
+    <header class="sticky top-0 z-50 border-b border-white/[0.04] bg-slate-950/80 backdrop-blur-2xl">
+        <div class="max-w-3xl mx-auto px-4">
+            <div class="h-[68px] flex items-center justify-between">
+                <a href="tournament.html" class="flex items-center gap-3 hover:opacity-80 transition">
+                    <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
-                    <div>
-                        <div class="text-base sm:text-lg font-black tracking-tight text-white">My Profile</div>
-                    </div>
+                    <span class="text-lg font-black tracking-tight text-white">Profile</span>
                 </a>
-                <div class="flex items-center gap-3 shrink-0">
-                    <div class="flex items-center gap-3 px-3 py-1.5 rounded-xl border border-white/10 bg-slate-900/80 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                        <div class="flex items-center gap-1.5" title="Main Deposit Balance">
-                            <span class="text-sm">🪙</span>
-                            <span class="text-amber-400 font-bold font-mono text-sm md:text-base" id="main-balance">0</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </header>
 
-    <main class="relative z-10 flex-grow max-w-2xl mx-auto w-full px-4 py-8 flex flex-col gap-6 mb-20">
+    <main class="relative z-10 flex-grow max-w-3xl mx-auto w-full px-4 py-6 flex flex-col gap-5 mb-20">
         
-        <!-- User Info Card -->
-        <div class="glass-strong rounded-3xl p-6 md:p-8 relative overflow-hidden border border-emerald-500/20 text-center">
-            <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl"></div>
-            
-            <div id="profile-pic-container" class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 p-1 mb-4 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
-                <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-3xl font-black text-emerald-400" id="profile-pic">
-                    U
-                </div>
+        <!-- User Identity Card -->
+        <div class="glass-strong rounded-3xl p-6 relative overflow-hidden flex flex-col items-center text-center">
+            <div id="profile-pic-container" class="w-20 h-20 rounded-full bg-slate-800 border-2 border-slate-700 mb-4 overflow-hidden flex items-center justify-center text-2xl font-black text-slate-400">
+                U
             </div>
             
-            <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">Loading...</h2>
-            <p id="profile-email" class="text-slate-400 text-sm mt-1">user@email.com</p>
-            <p class="text-xs text-slate-500 mt-2 font-mono" id="profile-uid">UID: -----</p>
-
-            <div id="vip-badge" class="hidden mt-4 inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/50 text-amber-400 px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-                👑 VIP Player
+            <h2 id="profile-name" class="text-xl font-black text-white tracking-tight">Trader</h2>
+            <p id="profile-email" class="text-slate-400 text-sm mt-0.5">loading...</p>
+            
+            <div class="mt-3 bg-slate-900/80 border border-slate-700/50 px-4 py-1.5 rounded-lg">
+                <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mr-2">UID</span>
+                <span id="profile-uid" class="text-sm text-cyan-400 font-mono font-bold tracking-widest">TA-XXXXXX</span>
             </div>
-            <div id="normal-badge" class="mt-4 inline-flex items-center gap-1.5 bg-slate-800/50 border border-slate-700 text-slate-400 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase">
-                Normal Tier
+
+            <!-- VIP Badge (Hidden Default) -->
+            <div id="vip-badge" class="hidden mt-4 inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 text-amber-400 px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                VIP ACTIVE
             </div>
         </div>
 
-        <!-- Career Stats -->
-        <h3 class="text-lg font-black text-white mt-2">📊 Career Stats</h3>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="glass p-5 rounded-2xl border border-white/5 text-center">
-                <div class="text-3xl mb-2">⚔️</div>
-                <div id="total-matches" class="text-2xl font-black text-white font-mono">0</div>
-                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Matches Played</div>
+        <!-- Matches Stats -->
+        <div class="glass p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+            <div>
+                <div class="text-sm font-bold text-white">Matches Played</div>
+                <div class="text-xs text-slate-500 mt-0.5">Total tournaments joined</div>
             </div>
-            <div class="glass p-5 rounded-2xl border border-white/5 text-center">
-                <div class="text-3xl mb-2">🤝</div>
-                <div id="total-referrals" class="text-2xl font-black text-cyan-400 font-mono">0</div>
-                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Friends Invited</div>
-            </div>
+            <div id="total-matches" class="text-2xl font-black text-emerald-400 font-mono">0</div>
         </div>
 
-        <!-- Wallet Breakdown -->
-        <h3 class="text-lg font-black text-white mt-2">💼 My Wallets</h3>
-        <div class="flex flex-col gap-3">
-            <div class="glass p-4 rounded-xl border border-white/5 flex justify-between items-center">
+        <!-- Operations & Settings Menu -->
+        <div class="glass rounded-3xl p-2 border border-white/5 flex flex-col">
+            
+            <!-- KYC -->
+            <button onclick="alert('KYC System Coming Soon')" class="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors group">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 text-lg">💰</div>
-                    <div>
-                        <div class="text-sm font-bold text-white">Deposit Balance</div>
-                        <div class="text-xs text-slate-500">For entry fees</div>
+                    <div class="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
+                    <span class="text-sm font-bold text-slate-200">KYC Verification</span>
                 </div>
-                <div class="font-mono font-black text-amber-400 text-lg" id="profile-deposit">🪙 0</div>
-            </div>
+                <svg class="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+            </button>
 
-            <div class="glass p-4 rounded-xl border border-white/5 flex justify-between items-center">
+            <!-- Bank Details -->
+            <button onclick="alert('Bank Details Coming Soon')" class="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors group">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 text-lg">🎁</div>
-                    <div>
-                        <div class="text-sm font-bold text-white">Bonus Balance</div>
-                        <div class="text-xs text-slate-500">Promotional coins</div>
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                     </div>
+                    <span class="text-sm font-bold text-slate-200">Bank Details for Withdrawal</span>
                 </div>
-                <div class="font-mono font-black text-purple-400 text-lg" id="profile-bonus">🪙 0</div>
-            </div>
+                <svg class="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+            </button>
 
-            <div class="glass p-4 rounded-xl border border-white/5 flex justify-between items-center">
+            <div class="h-px w-full bg-white/5 my-1"></div>
+
+            <!-- About Game -->
+            <button onclick="alert('About Page Coming Soon')" class="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors group">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400 text-lg">🏆</div>
-                    <div>
-                        <div class="text-sm font-bold text-white">Winnings</div>
-                        <div class="text-xs text-slate-500">Withdrawable cash</div>
+                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
+                    <span class="text-sm font-bold text-slate-200">About this Game</span>
                 </div>
-                <div class="font-mono font-black text-cyan-400 text-lg" id="profile-winnings">🪙 0</div>
-            </div>
+                <svg class="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+
+            <!-- T&C -->
+            <button onclick="alert('T&C Coming Soon')" class="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors group">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold text-slate-200">Terms & Conditions</span>
+                </div>
+                <svg class="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+
+            <!-- Contact -->
+            <button onclick="alert('Contact System Coming Soon')" class="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors group">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold text-slate-200">Contact Us</span>
+                </div>
+                <svg class="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+
         </div>
 
-        <!-- Logout Button -->
-        <button onclick="logoutUser()" class="mt-4 w-full bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-400 font-bold uppercase py-4 rounded-xl text-sm tracking-wider transition flex items-center justify-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Sign Out
+        <!-- Logout -->
+        <button onclick="logoutUser()" class="w-full bg-slate-900/50 border border-rose-500/20 hover:bg-rose-500/10 text-rose-400 font-bold uppercase py-4 rounded-2xl text-xs tracking-widest transition flex items-center justify-center gap-2 mt-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Log Out
         </button>
 
     </main>
 
     <!-- Bottom Nav -->
-    <nav class="w-full bg-slate-950/80 border-t border-white/[0.06] fixed bottom-0 z-40 backdrop-blur-2xl">
+    <nav class="w-full bg-slate-950/90 border-t border-white/[0.04] fixed bottom-0 z-40 backdrop-blur-2xl">
         <div class="max-w-md mx-auto flex justify-around p-3">
             <button onclick="window.location.href='tournament.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
                 <span class="text-xl mb-1">🏆</span><span class="text-[10px] font-bold">Tournaments</span>
@@ -171,26 +172,26 @@
 
     <!-- Logic Script -->
     <script>
-        // Set basic data immediately from Cache
+        // Set Local Cache Data
         window.onload = () => {
             let uName = localStorage.getItem("ta_userName") || "Trader";
             let uEmail = localStorage.getItem("ta_userEmail") || "";
             let uPhoto = localStorage.getItem("ta_userPhoto");
-            let uid = localStorage.getItem("ta_uid") || "-----";
+            let uid = localStorage.getItem("ta_uid") || "------";
+            
+            // Format UID properly (TA-XXXXXX)
+            let formattedUid = "TA-" + uid.substring(0,6).toUpperCase();
             
             document.getElementById("profile-name").innerText = uName;
             document.getElementById("profile-email").innerText = uEmail;
-            document.getElementById("profile-uid").innerText = "UID: " + uid;
+            document.getElementById("profile-uid").innerText = formattedUid;
             
             if(uPhoto && uPhoto.length > 5) {
                 document.getElementById("profile-pic").innerHTML = `<img src="${uPhoto}" referrerpolicy="no-referrer" class="w-full h-full object-cover">`;
+                document.getElementById("profile-pic-container").classList.remove("p-4"); // Remove padding for image
             } else {
                 document.getElementById("profile-pic").innerText = uName.charAt(0).toUpperCase();
             }
-
-            document.getElementById("main-balance").innerText = parseInt(localStorage.getItem('ta_balance')) || 0;
-            document.getElementById("profile-deposit").innerText = "🪙 " + (parseInt(localStorage.getItem('ta_balance')) || 0);
-            document.getElementById("profile-bonus").innerText = "🪙 " + (parseInt(localStorage.getItem('ta_bonus')) || 0);
         };
     </script>
 
@@ -217,28 +218,13 @@
                         if (docSnap.exists()) {
                             let data = docSnap.data();
                             
-                            // Balances Update
-                            if (data.balance !== undefined) {
-                                document.getElementById("main-balance").innerText = data.balance;
-                                document.getElementById("profile-deposit").innerText = `🪙 ${data.balance}`;
-                            }
-                            if (data.bonusBal !== undefined) {
-                                document.getElementById("profile-bonus").innerText = `🪙 ${data.bonusBal}`;
-                            }
-                            if (data.withdrawalBal !== undefined) {
-                                document.getElementById("profile-winnings").innerText = `🪙 ${data.withdrawalBal}`;
-                            }
-
                             // Stats Update
                             document.getElementById("total-matches").innerText = data.totalMatches || 0;
-                            // Add total referrals logic here if needed later
 
-                            // VIP Status Update
-                            if(data.isVIP) {
+                            // VIP Logic (Only show if True)
+                            if(data.isVIP === true) {
                                 document.getElementById("vip-badge").classList.remove("hidden");
-                                document.getElementById("normal-badge").classList.add("hidden");
-                                document.getElementById("profile-pic-container").classList.replace("from-emerald-500", "from-amber-400");
-                                document.getElementById("profile-pic-container").classList.replace("to-cyan-500", "to-amber-600");
+                                document.getElementById("profile-pic-container").classList.replace("border-slate-700", "border-amber-500/50");
                             }
                         }
                     });
@@ -250,22 +236,12 @@
         
         initLiveSync();
 
-        // Safe Logout Function
+        // Secure Logout
         window.logoutUser = async () => {
-            if(confirm("Are you sure you want to log out?")) {
+            if(confirm("Log out from Trade Abhyaas?")) {
                 try {
                     if(auth) await signOut(auth);
-                    // Clear all local storage
-                    localStorage.removeItem("ta_uid");
-                    localStorage.removeItem("ta_userName");
-                    localStorage.removeItem("ta_userEmail");
-                    localStorage.removeItem("ta_userPhoto");
-                    localStorage.removeItem("ta_balance");
-                    localStorage.removeItem("ta_bonus");
-                    localStorage.removeItem("ta_withdrawal");
-                    localStorage.removeItem("ta_joined");
-                    localStorage.removeItem("ta_past");
-                    
+                    localStorage.clear(); // Clears everything safely
                     window.location.replace("index.html");
                 } catch(e) {
                     alert("Error signing out!");
