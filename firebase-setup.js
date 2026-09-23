@@ -74,13 +74,28 @@ async function startFirebase() {
           if (userSnap.exists()) {
             // Agar purana user hai toh sirf data update karo
             await setDoc(userRef, userData, { merge: true });
-            localStorage.setItem("ta_balance", userSnap.data().balance || 0);
+            
+            // Browser mein purana balance aur bonus save karo
+            let existingData = userSnap.data();
+            localStorage.setItem("ta_balance", existingData.balance || 0);
+            localStorage.setItem("ta_bonus", existingData.bonusBal || 0);
           } else {
-            // Agar bilkul naya user hai toh 500 coins do
-            userData.balance = 500;
+            // 🔴 NAYA USER: Yahan humne naye rules laga diye (20 Coins + Referral Code + VIP status)
+            userData.balance = 20;               // Deposit balance
+            userData.bonusBal = 0;               // Bonus balance
+            userData.withdrawalBal = 0;          // Winnings
+            userData.isVIP = false;              // Shuru mein koi VIP nahi hoga
+            userData.sponsorUid = null;          // Jisne invite kiya
+            userData.l2SponsorUid = null;        // Sponsor ka sponsor
+            // User ki UID ke pehle 6 akshar se uska unique refer code banega (Eg: TA-A1B2C3)
+            userData.referralCode = "TA-" + user.uid.substring(0, 6).toUpperCase(); 
             userData.createdAt = new Date().toISOString();
+            
             await setDoc(userRef, userData);
-            localStorage.setItem("ta_balance", 500);
+            
+            // Browser mein naya balance save karo
+            localStorage.setItem("ta_balance", 20);
+            localStorage.setItem("ta_bonus", 0);
           }
 
           // UI display ke liye local storage
