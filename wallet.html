@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <!-- Header (Same as Tournament.html) -->
+    <!-- Header -->
     <header class="sticky top-0 z-50 border-b border-white/[0.06] bg-slate-950/65 backdrop-blur-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="h-[72px] flex items-center justify-between">
@@ -99,7 +99,6 @@
 
         <!-- Wallet Breakdown Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
             <!-- Deposit Balance -->
             <div class="glass-strong rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-emerald-400/30 transition">
                 <div class="absolute top-0 right-0 bg-emerald-500/10 text-emerald-400 text-[11px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-emerald-500/20">Trading Capital</div>
@@ -141,32 +140,22 @@
                     View Terms
                 </button>
             </div>
-
         </div>
 
-        <!-- Transaction History -->
+        <!-- Real Transaction History -->
         <div class="glass-strong rounded-2xl p-6 mt-4">
-            <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-wide">Recent Transactions</h2>
+            <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-wide flex justify-between">
+                Recent Transactions
+                <button onclick="loadTransactions()" class="text-xs text-emerald-400 hover:text-emerald-300 underline">↻ Refresh</button>
+            </h2>
+            <!-- Yahan dynamic code aayega -->
             <div id="tx-container" class="flex flex-col gap-3">
-                <div class="flex justify-between items-center p-3.5 bg-slate-900/50 rounded-xl border border-slate-800/80">
-                    <div>
-                        <div class="font-bold text-sm text-emerald-400">Welcome Deposit Bonus</div>
-                        <div class="text-xs text-slate-500">Account Created</div>
-                    </div>
-                    <div class="font-mono font-bold text-emerald-400">+🪙 500</div>
-                </div>
-                <div class="flex justify-between items-center p-3.5 bg-slate-900/50 rounded-xl border border-slate-800/80">
-                    <div>
-                        <div class="font-bold text-sm text-purple-400">Sign-up Promotional Credit</div>
-                        <div class="text-xs text-slate-500">Account Created</div>
-                    </div>
-                    <div class="font-mono font-bold text-purple-400">+🪙 100</div>
-                </div>
+                <p class="text-slate-500 text-sm text-center py-2 animate-pulse">Loading secure transactions...</p>
             </div>
         </div>
     </main>
 
-    <!-- Deposit Modal (New Theme) -->
+    <!-- Deposit Modal -->
     <div id="deposit-modal" class="fixed inset-0 z-[9999] hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="glass-strong p-6 rounded-3xl max-w-sm w-full mx-4 border border-emerald-500/30 shadow-2xl">
             <h3 class="text-xl font-black text-white mb-2">💰 Deposit Funds</h3>
@@ -179,7 +168,7 @@
         </div>
     </div>
 
-    <!-- Withdraw Modal (New Theme) -->
+    <!-- Withdraw Modal -->
     <div id="withdraw-modal" class="fixed inset-0 z-[9999] hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="glass-strong p-6 rounded-3xl max-w-sm w-full mx-4 border border-cyan-500/30 shadow-2xl">
             <h3 class="text-xl font-black text-white mb-2">💸 Withdraw Winnings</h3>
@@ -192,7 +181,7 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar (Updated) -->
+    <!-- Bottom Navigation Bar -->
     <nav class="w-full bg-slate-950/80 border-t border-white/[0.06] fixed bottom-0 z-40 backdrop-blur-2xl">
         <div class="max-w-md mx-auto flex justify-around p-3">
             <button onclick="window.location.href='tournament.html'" class="flex flex-col items-center nav-inactive hover:text-slate-300">
@@ -210,19 +199,62 @@
         </div>
     </nav>
 
+    <!-- UI & Functions Script -->
     <script>
         // Global variables synced with Firebase & LocalStorage
         var balance = parseInt(localStorage.getItem('ta_balance')) || 0;
         let withdrawalBal = parseInt(localStorage.getItem('ta_withdrawal')) || 0;
-        let bonusBal = parseInt(localStorage.getItem('ta_bonus')) || 100;
+        let bonusBal = parseInt(localStorage.getItem('ta_bonus')) || 0;
 
         function updateWalletUI() {
-            // Main balance is treated as Deposit Balance for trading
             document.getElementById('deposit-bal').innerText = `🪙 ${balance}`;
             document.getElementById('withdrawal-bal').innerText = `🪙 ${withdrawalBal}`;
             document.getElementById('bonus-bal').innerText = `🪙 ${bonusBal}`;
             document.getElementById('main-balance').innerText = balance;
         }
+
+        // Fetch Transactions from Backend God File
+        async function loadTransactions() {
+            const uid = localStorage.getItem("ta_uid");
+            const txContainer = document.getElementById("tx-container");
+            if(!uid) return;
+
+            try {
+                txContainer.innerHTML = '<p class="text-slate-500 text-sm text-center py-2 animate-pulse">Syncing...</p>';
+                const response = await fetch("/api/get-transactions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ uid: uid })
+                });
+                const data = await response.json();
+                
+                txContainer.innerHTML = ""; 
+
+                if (data.success && data.transactions.length > 0) {
+                    data.transactions.forEach(tx => {
+                        let dateObj = new Date(tx.date);
+                        let timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        let colorClass = tx.type === "credit" ? "text-emerald-400" : "text-amber-400";
+                        
+                        let txHtml = `
+                        <div class="flex justify-between items-center p-3.5 bg-slate-900/50 rounded-xl border border-slate-800/80">
+                            <div>
+                                <div class="font-bold text-sm ${colorClass}">${tx.title}</div>
+                                <div class="text-xs text-slate-500">${dateObj.toLocaleDateString()} at ${timeStr}</div>
+                            </div>
+                            <div class="font-mono font-bold ${colorClass}">${tx.amount}</div>
+                        </div>`;
+                        txContainer.insertAdjacentHTML("beforeend", txHtml);
+                    });
+                } else {
+                    txContainer.innerHTML = '<p class="text-slate-500 text-sm text-center py-2">No recent transactions yet.</p>';
+                }
+            } catch(err) {
+                console.error("History load error:", err);
+                txContainer.innerHTML = '<p class="text-rose-500 text-sm text-center py-2">Failed to load history.</p>';
+            }
+        }
+        window.loadTransactions = loadTransactions; // Make it global for module to call
 
         function openDepositModal() { document.getElementById('deposit-modal').classList.replace('hidden', 'flex'); }
         function closeDepositModal() { document.getElementById('deposit-modal').classList.replace('flex', 'hidden'); }
@@ -234,8 +266,9 @@
                 localStorage.setItem("ta_balance", balance);
                 updateWalletUI();
                 
-                // Live Sync to Firebase
+                // Live Sync to Firebase + Save Parchi (Transaction)
                 if(window.updateDBBalance) window.updateDBBalance(balance);
+                if(window.addTransaction) window.addTransaction("Deposit Added", `+🪙 ${amt}`, "credit");
                 
                 closeDepositModal();
                 alert(`Successfully deposited 🪙 ${amt}!`);
@@ -248,26 +281,45 @@
         function openWithdrawModal() { document.getElementById('withdraw-modal').classList.replace('hidden', 'flex'); }
         function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.replace('flex', 'hidden'); }
         
-        function processWithdraw() {
+        // UPGRADED WITHDRAW LOGIC (Connects to God File API)
+        async function processWithdraw() {
             let amt = parseInt(document.getElementById('withdraw-amount').value);
-            if(amt && amt > 0) {
-                if(amt <= withdrawalBal) {
-                    withdrawalBal -= amt;
-                    localStorage.setItem('ta_withdrawal', withdrawalBal);
-                    updateWalletUI();
+            const uid = localStorage.getItem("ta_uid");
+
+            if(!amt || amt <= 0) return alert('Please enter a valid withdrawal amount.');
+            if(!uid) return alert('Please login first.');
+
+            // Call Backend Secure API
+            try {
+                let btn = document.querySelector("#withdraw-modal button:last-child");
+                btn.innerText = "Processing...";
+                btn.disabled = true;
+
+                let response = await fetch('/api/withdraw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uid: uid, withdrawAmount: amt })
+                });
+                let data = await response.json();
+
+                btn.innerText = "✅ Request Payout";
+                btn.disabled = false;
+
+                if(data.success) {
+                    alert(`Payout request of 🪙 ${amt} processed securely!`);
                     closeWithdrawModal();
-                    alert(`Payout request of 🪙 ${amt} processed successfully!`);
                     document.getElementById('withdraw-amount').value = '';
+                    loadTransactions(); // Refresh history immediately
                 } else {
-                    alert('Insufficient winnings balance for withdrawal.');
+                    alert(`Withdrawal Failed: ${data.error}`);
                 }
-            } else {
-                alert('Please enter a valid withdrawal amount.');
+            } catch(err) {
+                console.error(err);
+                alert("Server Error! Make sure your Backend is running.");
             }
         }
 
         window.onload = () => {
-            // Profile Photo injection with referrer fix
             let uPhoto = localStorage.getItem("ta_userPhoto");
             let uName = localStorage.getItem("ta_userName") || "U";
             let hPic = document.getElementById("header-avatar");
@@ -278,6 +330,7 @@
             }
 
             updateWalletUI();
+            loadTransactions();
 
             setTimeout(() => {
                 const loader = document.getElementById('page-loader');
@@ -289,10 +342,10 @@
         };
     </script>
 
-    <!-- Firebase Live Sync Script -->
+    <!-- Firebase Live Sync Script (Upgraded for all balances) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         async function initLiveSync() {
             try {
@@ -305,15 +358,26 @@
                 if (uid) {
                     const userRef = doc(db, "users", uid);
                     
-                    // Live Snapshot Listener
+                    // LIVE LISTENER: Jo ab teeno balances par nazar rakhega
                     onSnapshot(userRef, (docSnap) => {
                         if (docSnap.exists()) {
-                            let liveBalance = docSnap.data().balance;
-                            if (liveBalance !== undefined) {
-                                balance = liveBalance;
-                                localStorage.setItem("ta_balance", liveBalance);
-                                updateWalletUI();
+                            let data = docSnap.data();
+                            
+                            if (data.balance !== undefined) {
+                                balance = data.balance;
+                                localStorage.setItem("ta_balance", data.balance);
                             }
+                            if (data.withdrawalBal !== undefined) {
+                                withdrawalBal = data.withdrawalBal;
+                                localStorage.setItem("ta_withdrawal", data.withdrawalBal);
+                            }
+                            if (data.bonusBal !== undefined) {
+                                bonusBal = data.bonusBal;
+                                localStorage.setItem("ta_bonus", data.bonusBal);
+                            }
+                            
+                            // UI Update karo jab backend change ho
+                            if(typeof updateWalletUI === "function") updateWalletUI();
                         }
                     });
 
@@ -322,6 +386,20 @@
                             await updateDoc(userRef, { balance: newBalance });
                         } catch(e) {
                             console.error("Failed to update database:", e);
+                        }
+                    };
+
+                    window.addTransaction = async (title, amtStr, type) => {
+                        try {
+                            await addDoc(collection(db, "users", uid, "transactions"), {
+                                title: title,
+                                amount: amtStr,
+                                type: type,
+                                date: new Date().toISOString()
+                            });
+                            if(window.loadTransactions) window.loadTransactions();
+                        } catch(e) {
+                            console.error("Tx error", e);
                         }
                     };
                 }
