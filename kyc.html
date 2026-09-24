@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Abhyaas - KYC Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"] },
+                }
+            }
+        };
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
+        }
+        
+        @keyframes loader-spin { to { transform: rotate(360deg); } }
+        .loader-ring { animation: loader-spin 1s linear infinite; }
+        
+        .glass-strong { 
+            background: rgba(15, 23, 42, 0.85); 
+            border: 1px solid rgba(148, 163, 184, 0.15); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+        }
+        
+        /* PREMIUM INPUT STYLES */
+        .input-field { 
+            width: 100%; 
+            background-color: #0f172a; 
+            border: 1px solid #334155; 
+            border-radius: 0.75rem; 
+            padding: 0.75rem 1rem; 
+            color: #ffffff; 
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            transition: all 0.2s ease; 
+        }
+        .input-field::placeholder { color: #64748b; font-weight: 500; }
+        .input-field:focus { 
+            outline: none; 
+            border-color: #10b981; 
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); 
+            background-color: #020617;
+        }
+        
+        select.input-field option { background-color: #0f172a; color: white; }
+
+        .btn-3d {
+            background: linear-gradient(to bottom, #10b981, #059669);
+            box-shadow: 0 4px 0 #047857, 0 8px 15px rgba(0,0,0,0.2);
+            border: 1px solid #34d399;
+            transition: all 0.1s ease;
+        }
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 #047857, 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .btn-3d:disabled {
+            background: #334155;
+            box-shadow: 0 4px 0 #0f172a;
+            border-color: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 font-sans antialiased overflow-x-hidden flex flex-col">
+
+    <!-- Loading Screen -->
+    <div id="page-loader" class="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative w-16 h-16 flex items-center justify-center">
+            <div class="loader-ring absolute inset-0 rounded-full border-4 border-emerald-500/20 border-t-emerald-500"></div>
+            <svg class="w-6 h-6 text-emerald-400 absolute" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h2 class="mt-5 text-sm font-black tracking-[0.2em] text-white">TRADE ABHYAAS</h2>
+        <div class="mt-2 text-xs text-slate-500 tracking-wider">SECURE KYC PORTAL...</div>
+    </div>
+
+    <!-- Minimal Header -->
+    <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+        <div class="max-w-3xl mx-auto px-4">
+            <div class="h-[70px] flex items-center justify-between">
+                <a href="profile.html" class="flex items-center gap-3 hover:opacity-80 transition">
+                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                    </div>
+                    <div>
+                        <div class="text-lg font-black tracking-tight text-white flex items-center gap-2">
+                            Identity Verification <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="text-[10px] uppercase text-slate-400 font-bold tracking-widest">Required for Payouts</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-grow max-w-3xl mx-auto w-full px-4 py-8 flex flex-col gap-6 mb-10">
+        
+        <div id="kyc-banner" class="glass-strong rounded-2xl p-5 border-l-4 border-l-amber-500 flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <div>
+                <h3 class="font-black text-white text-base uppercase tracking-wider">Action Required</h3>
+                <p class="text-slate-400 text-xs mt-1 leading-relaxed">Please complete your profile details. This helps us customize your trading experience and comply with financial regulations.</p>
+            </div>
+        </div>
+
+        <div id="verified-banner" class="hidden glass-strong rounded-2xl p-5 border-l-4 border-l-emerald-500 items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div>
+                <h3 class="font-black text-white text-base uppercase tracking-wider">KYC Verified</h3>
+                <p class="text-slate-400 text-xs mt-1">Your identity is successfully verified. You are ready to trade and withdraw.</p>
+            </div>
+        </div>
+
+        <form id="kyc-form" class="flex flex-col gap-6">
+            
+            <!-- 1. Personal & Contact Info -->
+            <div class="glass-strong rounded-2xl p-6 border border-slate-800">
+                <h2 class="text-base font-black text-white mb-5 uppercase tracking-wide flex items-center gap-2">
+                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg> Profile & Contact
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Full Name (As per PAN)</label>
+                        <input type="text" id="fullname" required placeholder="Enter your full name" class="input-field uppercase">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Date of Birth</label>
+                        <input type="date" id="dob" required class="input-field text-slate-300">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Mobile Number</label>
+                        <div class="flex">
+                            <span class="inline-flex items-center px-3 bg-slate-800 border border-r-0 border-slate-700 rounded-l-xl text-slate-400 font-bold">+91</span>
+                            <input type="tel" id="mobile" required placeholder="10-digit number" maxlength="10" pattern="[0-9]{10}" class="input-field rounded-l-none pl-3 font-mono">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Email ID</label>
+                        <input type="email" id="email" required placeholder="your@email.com" class="input-field">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Current Occupation</label>
+                        <select id="occupation" required class="input-field cursor-pointer text-slate-300">
+                            <option value="" disabled selected>Select your profession</option>
+                            <option value="Student">Student</option>
+                            <option value="Private Sector">Private Sector Employee</option>
+                            <option value="Govt Sector">Government Employee</option>
+                            <option value="Business">Business / Self-Employed</option>
+                            <option value="Professional">Professional (Doctor, Lawyer, etc.)</option>
+                            <option value="Retired">Retired</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">State of Residence</label>
+                        <select id="state" required class="input-field cursor-pointer text-slate-300">
+                            <option value="" disabled selected>Select your current state</option>
+                            <option value="Andaman and Nicobar Islands">Andaman & Nicobar</option>
+                            <option value="Andhra Pradesh" class="text-rose-400 font-bold">Andhra Pradesh (Restricted)</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam" class="text-rose-400 font-bold">Assam (Restricted)</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chandigarh">Chandigarh</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jammu and Kashmir">Jammu & Kashmir</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland" class="text-rose-400 font-bold">Nagaland (Restricted)</option>
+                            <option value="Odisha" class="text-rose-400 font-bold">Odisha (Restricted)</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim" class="text-rose-400 font-bold">Sikkim (Restricted)</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana" class="text-rose-400 font-bold">Telangana (Restricted)</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Legal Documents -->
+            <div class="glass-strong rounded-2xl p-6 border border-slate-800">
+                <h2 class="text-base font-black text-white mb-5 uppercase tracking-wide flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> Identity Documents
+                </h2>
+                
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">PAN Card Number</label>
+                        <input type="text" id="pan" required placeholder="e.g. ABCDE1234F" maxlength="10" class="input-field uppercase font-mono tracking-widest text-amber-400 focus:text-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Aadhaar Number (Optional)</label>
+                        <input type="text" id="aadhaar" placeholder="12-Digit Number" maxlength="12" pattern="[0-9]{12}" class="input-field font-mono tracking-widest text-emerald-400 focus:text-emerald-400">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full btn-3d text-slate-950 font-black uppercase py-4 rounded-xl text-sm tracking-widest flex items-center justify-center gap-2 mt-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Save & Verify Profile
+            </button>
+            <p class="text-center text-[10px] text-slate-500 font-bold tracking-wide mt-[-10px] uppercase">Your data is heavily encrypted 🔒</p>
+        </form>
+
+    </main>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        function showToast(msg, type) {
+            let box = document.getElementById("toast-container");
+            let el = document.createElement("div");
+            let icon = type === 'success' ? '<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' 
+                       : '<svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+            let bgClass = type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30';
+            
+            el.className = `p-4 rounded-xl shadow-lg text-sm font-bold flex items-center gap-3 transform transition-all duration-300 translate-x-full opacity-0 border backdrop-blur-md ${bgClass} text-white`;
+            el.innerHTML = `${icon} <span>${msg}</span>`;
+            box.appendChild(el);
+            setTimeout(() => el.classList.remove("translate-x-full", "opacity-0"), 10);
+            setTimeout(() => { el.classList.add("translate-x-full", "opacity-0"); setTimeout(() => el.remove(), 300); }, 3500);
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('page-loader');
+                if(loader) {
+                    loader.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => loader.remove(), 500);
+                }
+            }, 400);
+
+            // Pre-fill Email and Name from Google Auth
+            let uName = localStorage.getItem("ta_userName") || "";
+            let uEmail = localStorage.getItem("ta_userEmail") || "";
+            document.getElementById("fullname").value = uName;
+            document.getElementById("email").value = uEmail;
+        };
+    </script>
+
+    <!-- Firebase Live Sync & Submission -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        let db;
+        let userRef;
+        const uid = localStorage.getItem("ta_uid");
+
+        async function initFirebase() {
+            try {
+                const response = await fetch("/api/firebase-config");
+                const config = await response.json();
+                const app = initializeApp(config);
+                db = getFirestore(app);
+                
+                if (uid) {
+                    userRef = doc(db, "users", uid);
+                    const userSnap = await getDoc(userRef);
+                    
+                    if(userSnap.exists()) {
+                        let data = userSnap.data();
+                        if(data.kycStatus === "verified" || data.kycStatus === "pending") {
+                            document.getElementById("kyc-form").classList.add("hidden");
+                            document.getElementById("kyc-banner").classList.add("hidden");
+                            let vBanner = document.getElementById("verified-banner");
+                            vBanner.classList.replace("hidden", "flex");
+                            
+                            if(data.kycStatus === "pending") {
+                                vBanner.querySelector("h3").innerText = "Under Review ⏳";
+                                vBanner.querySelector("p").innerText = "Your profile is being reviewed. Withdrawals will unlock soon.";
+                                vBanner.classList.replace("border-l-emerald-500", "border-l-amber-500");
+                                vBanner.querySelector(".rounded-full").classList.replace("bg-emerald-500/10", "bg-amber-500/10");
+                                vBanner.querySelector(".rounded-full").classList.replace("text-emerald-400", "text-amber-400");
+                                vBanner.querySelector("svg").innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>`;
+                            }
+                        }
+                    }
+                }
+            } catch(err) {
+                console.error("Firebase init failed:", err);
+            }
+        }
+        initFirebase();
+
+        // Handle Form Submission
+        document.getElementById('kyc-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            let state = document.getElementById('state').value;
+            let pan = document.getElementById('pan').value.toUpperCase();
+            let mobile = document.getElementById('mobile').value;
+            let occupation = document.getElementById('occupation').value;
+            
+            // Validate Phone Number
+            if(mobile.length !== 10) {
+                showToast("Please enter a valid 10-digit mobile number.", "error");
+                return;
+            }
+
+            // Validate PAN Format
+            let panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (!panRegex.test(pan)) {
+                showToast("Invalid PAN Card format. (e.g., ABCDE1234F)", "error");
+                return;
+            }
+
+            // Restricted States
+            if(["Assam", "Odisha", "Telangana", "Andhra Pradesh", "Sikkim", "Nagaland"].includes(state)) {
+                showToast(`As per Govt regulations, real-money gaming is restricted in ${state}.`, "error");
+                return;
+            }
+
+            // Age Check
+            let dobInput = document.getElementById('dob').value;
+            let dobDate = new Date(dobInput);
+            let today = new Date();
+            let age = today.getFullYear() - dobDate.getFullYear();
+            let m = today.getMonth() - dobDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) { age--; }
+
+            if(age < 18) {
+                showToast("You must be 18 years or older to proceed.", "error");
+                return;
+            }
+
+            let btn = document.getElementById('submit-btn');
+            btn.innerHTML = "Processing Details... ⏳";
+            btn.disabled = true;
+
+            try {
+                // Save to Firebase
+                if(userRef) {
+                    await updateDoc(userRef, { 
+                        kycStatus: "verified", // Demo verification
+                        state: state,
+                        mobile: mobile,
+                        occupation: occupation,
+                        isKycComplete: true
+                    });
+                }
+                
+                setTimeout(() => {
+                    showToast("Profile updated and verified successfully!", "success");
+                    btn.innerHTML = "Profile Verified ✅";
+                    btn.classList.replace("btn-3d", "bg-emerald-600");
+                    btn.classList.add("text-white");
+                    
+                    setTimeout(() => {
+                        window.location.replace("profile.html");
+                    }, 1500);
+                }, 2000);
+
+            } catch(error) {
+                showToast("Failed to save details. Try again.", "error");
+                btn.innerHTML = "Save & Verify Profile";
+                btn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>
